@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏪 LTM Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(26, 26, 26, 0.95);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid #8b0000;
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 25px;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: #d4af37;
+            font-size: 24px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .header-title {
+            color: #d4af37;
+            font-size: 24px;
+            font-weight: bold;
+            flex: 1;
+        }
+        
+        .wallet-info {
+            background: #1a1a1a;
+            border: 1px solid #8b0000;
+            border-radius: 10px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .balance {
+            color: #d4af37;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            background: #1a1a1a;
+            border: 1px solid #8b0000;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .category-btn.active {
+            background: #8b0000;
+        }
+        
+        .category-btn:hover {
+            background: #8b0000;
+        }
+        
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .item-card {
+            background: #1a1a1a;
+            border: 1px solid #8b0000;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-5px);
+            border-color: #d4af37;
+            box-shadow: 0 10px 20px rgba(139,0,0,0.3);
+        }
+        
+        .item-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .item-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        
+        .item-description {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+        
+        .item-price {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #d4af37;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .buy-btn {
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .buy-btn:hover {
+            background: #a00;
+        }
+        
+        .buy-btn:disabled {
+            background: #3a3a3a;
+            cursor: not-allowed;
+        }
+        
+        .inventory-section {
+            margin-top: 40px;
+            background: #1a1a1a;
+            border: 1px solid #8b0000;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .inventory-title {
+            color: #d4af37;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .inventory-item {
+            background: #2a2a2a;
+            border: 1px solid #8b0000;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .inventory-icon {
+            font-size: 24px;
+        }
+        
+        .inventory-name {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .equip-btn {
+            background: none;
+            border: 1px solid #8b0000;
+            color: #d4af37;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .equip-btn.active {
+            background: #8b0000;
+            color: #fff;
+        }
+        
+        .status {
+            color: #888;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-btn">←</a>
+        <span class="header-title">🏪 LTM Shop</span>
+        <div class="wallet-info" id="wallet-info">
+            <span>💰</span>
+            <span class="balance" id="balance">0 LTM</span>
+        </div>
+    </div>
+
+    <div class="categories" id="categories"></div>
+
+    <div class="items-grid" id="items-grid"></div>
+
+    <div class="inventory-section" id="inventory-section">
+        <div class="inventory-title">🎒 Мой инвентарь</div>
+        <div class="inventory-grid" id="inventory-grid"></div>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script src="wallet.js"></script>
+    <script src="shop.js"></script>
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        let user = tg.initDataUnsafe?.user;
+        let currentUserId = user ? 'tg_' + user.id : 'guest_' + Date.now();
+
+        // Инициализация финансов
+        let finance = new LTMFinance(currentUserId);
+        let shop = new LTMShop(finance);
+
+        // Обновление баланса
+        function updateBalance() {
+            document.getElementById('balance').innerText = finance.getBalance().toFixed(2) + ' LTM';
+        }
+
+        // Отображение категорий
+        function renderCategories() {
+            let categories = shop.getCategories();
+            let html = '<button class="category-btn active" onclick="filterItems(\'all\')">Все</button>';
+            
+            for (let [key, cat] of Object.entries(categories)) {
+                html += `<button class="category-btn" onclick="filterItems('${key}')">${cat.icon} ${cat.name}</button>`;
+            }
+            
+            document.getElementById('categories').innerHTML = html;
+        }
+
+        // Фильтрация товаров
+        window.filterItems = function(category) {
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderItems(category === 'all' ? null : category);
+        };
+
+        // Отображение товаров
+        function renderItems(category = null) {
+            let items = shop.getItems(category);
+            let html = '';
+            
+            items.forEach(item => {
+                html += `
+                    <div class="item-card">
+                        <div class="item-icon">${item.icon}</div>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-description">${item.description}</div>
+                        <div class="item-price">💰 ${item.price} LTM</div>
+                        <button class="buy-btn" onclick="buyItem('${item.id}')" ${finance.getBalance() < item.price ? 'disabled' : ''}>Купить</button>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('items-grid').innerHTML = html;
+        }
+
+        // Покупка
+        window.buyItem = function(itemId) {
+            let result = shop.buy(itemId);
+            
+            if (result.success) {
+                setStatus(`✅ Куплено: ${result.item.name}`);
+                updateBalance();
+                renderInventory();
+                renderItems();
+            } else {
+                setStatus(`❌ ${result.error}`);
+            }
+        };
+
+        // Отображение инвентаря
+        function renderInventory() {
+            let inventory = shop.getInventory();
+            let html = '';
+            
+            inventory.forEach(item => {
+                html += `
+                    <div class="inventory-item">
+                        <span class="inventory-icon">${item.icon}</span>
+                        <span class="inventory-name">${item.name}</span>
+                        <button class="equip-btn ${item.equipped ? 'active' : ''}" onclick="toggleEquip('${item.id}')">${item.equipped ? '✓' : '✕'}</button>
+                    </div>
+                `;
+            });
+            
+            if (inventory.length === 0) {
+                html = '<div style="grid-column: 1/-1; text-align: center; color: #888;">Инвентарь пуст</div>';
+            }
+            
+            document.getElementById('inventory-grid').innerHTML = html;
+        }
+
+        // Экипировка
+        window.toggleEquip = function(itemId) {
+            let result = shop.equip(itemId);
+            if (result.success) {
+                renderInventory();
+                setStatus(result.equipped ? '✅ Предмет экипирован' : '✅ Предмет снят');
+            }
+        };
+
+        function setStatus(text) {
+            document.getElementById('status').innerText = text;
+            setTimeout(() => document.getElementById('status').innerText = '', 2000);
+        }
+
+        // Инициализация
+        renderCategories();
+        renderItems();
+        renderInventory();
+        updateBalance();
+
+        finance.subscribe(updateBalance);
+
+        tg.MainButton.setText('⚔️ LTM Empire').show();
+        tg.MainButton.onClick(() => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
