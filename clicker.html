@@ -21,17 +21,30 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            position: relative;
+        }
+        
+        .gothic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, #1a1a1a 0%, #0a0a0a 80%);
+            z-index: -1;
         }
         
         .header {
             width: 100%;
-            background: #1a1a1a;
-            padding: 15px;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
             display: flex;
             align-items: center;
             gap: 15px;
-            border-bottom: 1px solid #8b0000;
-            margin-bottom: 30px;
+            border-bottom: 2px solid #8b0000;
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 25px;
         }
         
         .back-btn {
@@ -45,7 +58,7 @@
         
         .header-title {
             color: #d4af37;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
             flex: 1;
         }
@@ -197,22 +210,27 @@
             font-size: 14px;
         }
         
-        .ad-btn {
+        .shop-link {
             background: #8b0000;
             color: #fff;
             border: none;
             border-radius: 10px;
-            padding: 15px;
+            padding: 15px 25px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             width: 100%;
             max-width: 400px;
             margin-bottom: 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             transition: all 0.2s;
         }
         
-        .ad-btn:hover {
+        .shop-link:hover {
             background: #a00;
             transform: scale(1.02);
         }
@@ -253,9 +271,38 @@
         .leaderboard-score {
             color: #d4af37;
         }
+        
+        .status {
+            color: #888;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        /* Анимация для флоатеров */
+        .floating-text {
+            position: absolute;
+            color: #d4af37;
+            font-weight: bold;
+            animation: floatUp 1s ease-out forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="gothic-bg"></div>
+
     <div class="header">
         <a href="index.html" class="back-btn">←</a>
         <span class="header-title">🖱️ LTM Clicker</span>
@@ -267,7 +314,7 @@
         <div class="balance-currency">LTM</div>
     </div>
 
-    <div class="coin-container" id="coin" onclick="handleClick()">
+    <div class="coin-container" id="coin" onclick="handleClick(event)">
         <div class="coin">💰</div>
     </div>
 
@@ -277,12 +324,16 @@
             <span class="stat-value" id="clicks">0</span>
         </div>
         <div class="stat-item">
-            <span class="stat-label">Уровень</span>
-            <span class="stat-value" id="level">1</span>
+            <span class="stat-label">За клик</span>
+            <span class="stat-value" id="perClick">0.01 LTM</span>
         </div>
         <div class="stat-item">
-            <span class="stat-label">За клик</span>
-            <span class="stat-value" id="perClick">1</span>
+            <span class="stat-label">Множитель</span>
+            <span class="stat-value" id="multiplier">x1</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Автокликер</span>
+            <span class="stat-value" id="autoClicker">0/мин</span>
         </div>
         <div class="energy-bar">
             <div class="energy-fill" id="energyBar" style="width: 100%"></div>
@@ -293,7 +344,9 @@
         </div>
     </div>
 
-    <button class="ad-btn" id="adBtn" onclick="showAd()">📺 Смотреть рекламу +50 энергии</button>
+    <a href="shop.html" class="shop-link">
+        <span>🏪</span> Купить бусты в магазине
+    </a>
 
     <div class="boosts-container">
         <div class="boost-btn" onclick="buyBoost('energy')" id="boostEnergy">
@@ -304,14 +357,6 @@
             <div class="boost-name">💪 Множитель</div>
             <div class="boost-price" id="boostMultiplierPrice">200 LTM</div>
         </div>
-        <div class="boost-btn" onclick="buyBoost('regen')" id="boostRegen">
-            <div class="boost-name">🔄 Регенерация</div>
-            <div class="boost-price" id="boostRegenPrice">300 LTM</div>
-        </div>
-        <div class="boost-btn" onclick="buyBoost('crit')" id="boostCrit">
-            <div class="boost-name">🎯 Крит. шанс</div>
-            <div class="boost-price" id="boostCritPrice">400 LTM</div>
-        </div>
     </div>
 
     <div class="leaderboard">
@@ -319,6 +364,10 @@
         <div id="leaderboard"></div>
     </div>
 
+    <div class="status" id="status"></div>
+
+    <script src="wallet.js"></script>
+    <script src="shop.js"></script>
     <script>
         // Telegram WebApp
         let tg = window.Telegram.WebApp;
@@ -327,170 +376,149 @@
         
         // Данные пользователя
         let user = tg.initDataUnsafe?.user;
-        let userId = user ? 'tg_' + user.id : 'guest_' + Date.now();
+        let currentUserId = user ? 'tg_' + user.id : 'guest_' + Date.now();
         let userName = user ? user.first_name : 'Гость';
         
-        // Состояние игры
+        // Инициализация финансов
+        let finance = new LTMFinance(currentUserId);
+        let shop = new LTMShop(finance);
+        
+        // Состояние кликера
         let gameState = {
-            balance: parseInt(localStorage.getItem('ltm_balance')) || 0,
-            clicks: parseInt(localStorage.getItem('ltm_clicks')) || 0,
-            level: parseInt(localStorage.getItem('ltm_level')) || 1,
-            perClick: parseInt(localStorage.getItem('ltm_perClick')) || 1,
-            energy: parseInt(localStorage.getItem('ltm_energy')) || 1000,
-            maxEnergy: parseInt(localStorage.getItem('ltm_maxEnergy')) || 1000,
-            multiplier: parseInt(localStorage.getItem('ltm_multiplier')) || 1,
-            regenRate: parseInt(localStorage.getItem('ltm_regenRate')) || 1,
-            critChance: parseInt(localStorage.getItem('ltm_critChance')) || 5,
-            boostPrices: {
-                energy: 100,
-                multiplier: 200,
-                regen: 300,
-                crit: 400
-            }
+            clicks: parseInt(localStorage.getItem('ltm_clicks_' + currentUserId)) || 0,
+            energy: parseInt(localStorage.getItem('ltm_energy_' + currentUserId)) || 1000,
+            maxEnergy: parseInt(localStorage.getItem('ltm_maxEnergy_' + currentUserId)) || 1000,
+            multiplier: 1,
+            autoClicker: 0,
+            perClick: 0.01
         };
         
-        // Таблица лидеров (локальная для демо)
-        let leaderboard = JSON.parse(localStorage.getItem('ltm_leaderboard')) || [];
+        // Применяем эффекты из магазина
+        function applyBoosts() {
+            let stats = shop.applyEffects({ clickMultiplier: 1, autoClicks: 0 });
+            gameState.multiplier = stats.clickMultiplier || 1;
+            gameState.autoClicker = stats.autoClicks || 0;
+            gameState.perClick = 0.01 * gameState.multiplier;
+            
+            updateUI();
+        }
         
         // Обновление интерфейса
         function updateUI() {
-            document.getElementById('balance').innerText = gameState.balance;
+            document.getElementById('balance').innerText = finance.getBalance().toFixed(2);
             document.getElementById('clicks').innerText = gameState.clicks;
-            document.getElementById('level').innerText = gameState.level;
-            document.getElementById('perClick').innerText = gameState.perClick;
+            document.getElementById('perClick').innerText = gameState.perClick.toFixed(2) + ' LTM';
+            document.getElementById('multiplier').innerText = 'x' + gameState.multiplier;
+            document.getElementById('autoClicker').innerText = gameState.autoClicker + '/мин';
             document.getElementById('energy').innerText = gameState.energy + '/' + gameState.maxEnergy;
             
             let energyPercent = (gameState.energy / gameState.maxEnergy) * 100;
             document.getElementById('energyBar').style.width = energyPercent + '%';
             
-            // Цены бустов (растут с уровнем)
-            document.getElementById('boostEnergyPrice').innerText = gameState.boostPrices.energy + ' LTM';
-            document.getElementById('boostMultiplierPrice').innerText = gameState.boostPrices.multiplier + ' LTM';
-            document.getElementById('boostRegenPrice').innerText = gameState.boostPrices.regen + ' LTM';
-            document.getElementById('boostCritPrice').innerText = gameState.boostPrices.crit + ' LTM';
-            
-            // Сохраняем в localStorage
-            localStorage.setItem('ltm_balance', gameState.balance);
-            localStorage.setItem('ltm_clicks', gameState.clicks);
-            localStorage.setItem('ltm_level', gameState.level);
-            localStorage.setItem('ltm_perClick', gameState.perClick);
-            localStorage.setItem('ltm_energy', gameState.energy);
-            localStorage.setItem('ltm_maxEnergy', gameState.maxEnergy);
-            localStorage.setItem('ltm_multiplier', gameState.multiplier);
-            localStorage.setItem('ltm_regenRate', gameState.regenRate);
-            localStorage.setItem('ltm_critChance', gameState.critChance);
-            
-            updateLeaderboard();
+            // Сохраняем
+            localStorage.setItem('ltm_clicks_' + currentUserId, gameState.clicks);
+            localStorage.setItem('ltm_energy_' + currentUserId, gameState.energy);
+            localStorage.setItem('ltm_maxEnergy_' + currentUserId, gameState.maxEnergy);
         }
         
-        // Клик по монете
-        function handleClick() {
+        // Обработка клика
+        function handleClick(event) {
             if (gameState.energy <= 0) {
-                tg.showAlert('⚡ Нет энергии! Смотри рекламу или жди восстановления');
+                setStatus('⚡ Нет энергии! Купи энергию в магазине');
                 return;
             }
             
-            // Шанс крита
-            let isCrit = Math.random() * 100 < gameState.critChance;
-            let earned = gameState.perClick * (isCrit ? 2 : 1);
+            // Рассчитываем заработок
+            let earned = gameState.perClick;
             
-            gameState.balance += earned;
+            // Добавляем в кошелёк
+            finance.add(earned, 'Клик в кликере');
+            
+            // Обновляем статистику
             gameState.clicks++;
             gameState.energy--;
             
-            // Вибрация на телефоне
+            // Сохраняем клики пользователя
+            let userClicks = parseInt(localStorage.getItem('ltm_user_clicks_' + currentUserId)) || 0;
+            userClicks++;
+            localStorage.setItem('ltm_user_clicks_' + currentUserId, userClicks);
+            
+            // Создаём флоатер
+            let floating = document.createElement('div');
+            floating.className = 'floating-text';
+            floating.innerText = '+' + earned.toFixed(2) + ' LTM';
+            floating.style.left = (event.clientX - 20) + 'px';
+            floating.style.top = (event.clientY - 30) + 'px';
+            document.body.appendChild(floating);
+            
+            setTimeout(() => floating.remove(), 1000);
+            
+            // Вибрация
             if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred(isCrit ? 'heavy' : 'light');
+                tg.HapticFeedback.impactOccurred('light');
             }
             
             updateUI();
-            
-            // Каждые 100 кликов - уровень
-            if (gameState.clicks % 100 === 0) {
-                gameState.level++;
-                updateUI();
-            }
         }
         
-        // Показ рекламы (заглушка для AdsGram)
-        function showAd() {
-            tg.showAlert('📺 Здесь будет реклама AdsGram. Смотришь - получаешь +50 энергии!');
-            gameState.energy = Math.min(gameState.energy + 50, gameState.maxEnergy);
-            updateUI();
-        }
-        
-        // Покупка бустов
+        // Покупка бустов (локальные, для быстрого доступа)
         function buyBoost(type) {
-            let price = gameState.boostPrices[type];
+            let price = type === 'energy' ? 100 : 200;
             
-            if (gameState.balance < price) {
-                tg.showAlert('❌ Недостаточно LTM');
+            if (finance.getBalance() < price) {
+                setStatus('❌ Недостаточно LTM');
                 return;
             }
             
-            gameState.balance -= price;
-            
-            switch(type) {
-                case 'energy':
-                    gameState.maxEnergy += 100;
-                    gameState.energy += 100;
-                    gameState.boostPrices.energy = Math.floor(gameState.boostPrices.energy * 1.5);
-                    break;
-                case 'multiplier':
-                    gameState.multiplier++;
-                    gameState.perClick = gameState.level * gameState.multiplier;
-                    gameState.boostPrices.multiplier = Math.floor(gameState.boostPrices.multiplier * 1.5);
-                    break;
-                case 'regen':
-                    gameState.regenRate++;
-                    gameState.boostPrices.regen = Math.floor(gameState.boostPrices.regen * 1.5);
-                    // Запускаем регенерацию
-                    startRegeneration();
-                    break;
-                case 'crit':
-                    gameState.critChance += 5;
-                    gameState.boostPrices.crit = Math.floor(gameState.boostPrices.crit * 1.5);
-                    break;
+            if (type === 'energy') {
+                finance.spend(price, 'Покупка энергии');
+                gameState.maxEnergy += 100;
+                gameState.energy += 100;
+                setStatus('✅ Энергия увеличена!');
+            } else {
+                finance.spend(price, 'Покупка множителя');
+                gameState.multiplier++;
+                gameState.perClick = 0.01 * gameState.multiplier;
+                setStatus('✅ Множитель увеличен!');
             }
             
             updateUI();
-            tg.showAlert('✅ Буп куплен!');
         }
         
-        // Регенерация энергии
-        let regenInterval;
-        function startRegeneration() {
-            if (regenInterval) clearInterval(regenInterval);
-            regenInterval = setInterval(() => {
-                if (gameState.energy < gameState.maxEnergy) {
-                    gameState.energy = Math.min(gameState.energy + gameState.regenRate, gameState.maxEnergy);
-                    updateUI();
-                }
-            }, 5000);
+        // Автокликер
+        function startAutoClicker() {
+            if (gameState.autoClicker > 0) {
+                setInterval(() => {
+                    if (gameState.energy > 0) {
+                        let earned = gameState.perClick;
+                        finance.add(earned, 'Автоклик');
+                        gameState.clicks++;
+                        gameState.energy--;
+                        updateUI();
+                    }
+                }, 60000 / gameState.autoClicker); //每分钟点击次数
+            }
         }
         
         // Обновление таблицы лидеров
         function updateLeaderboard() {
-            // Добавляем текущего пользователя
-            let userEntry = {
-                name: userName,
-                score: gameState.balance,
-                id: userId
-            };
+            // Собираем данные из localStorage
+            let leaderboard = [];
             
-            // Обновляем или добавляем
-            let existingIndex = leaderboard.findIndex(e => e.id === userId);
-            if (existingIndex >= 0) {
-                leaderboard[existingIndex] = userEntry;
-            } else {
-                leaderboard.push(userEntry);
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && key.startsWith('ltm_user_clicks_')) {
+                    let userId = key.replace('ltm_user_clicks_', '');
+                    let clicks = parseInt(localStorage.getItem(key)) || 0;
+                    let name = userId === currentUserId ? userName + ' (Вы)' : userId.substring(0, 8) + '...';
+                    
+                    leaderboard.push({ name: name, clicks: clicks });
+                }
             }
             
-            // Сортируем по убыванию
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, 10); // Топ 10
-            
-            localStorage.setItem('ltm_leaderboard', JSON.stringify(leaderboard));
+            // Сортируем
+            leaderboard.sort((a, b) => b.clicks - a.clicks);
+            leaderboard = leaderboard.slice(0, 10);
             
             // Отрисовываем
             let html = '';
@@ -499,7 +527,7 @@
                     <div class="leaderboard-item">
                         <span class="leaderboard-rank">${index + 1}</span>
                         <span class="leaderboard-name">${entry.name}</span>
-                        <span class="leaderboard-score">${entry.score} LTM</span>
+                        <span class="leaderboard-score">${entry.clicks.toLocaleString()}</span>
                     </div>
                 `;
             });
@@ -507,9 +535,21 @@
             document.getElementById('leaderboard').innerHTML = html;
         }
         
-        // Запуск
-        startRegeneration();
+        function setStatus(text) {
+            document.getElementById('status').innerText = text;
+            setTimeout(() => document.getElementById('status').innerText = '', 2000);
+        }
+        
+        // Инициализация
+        applyBoosts();
         updateUI();
+        updateLeaderboard();
+        startAutoClicker();
+        
+        // Подписка на изменения баланса
+        finance.subscribe(() => {
+            updateUI();
+        });
         
         // Главная кнопка Telegram
         tg.MainButton.setText('⚔️ LTM Empire').show();
