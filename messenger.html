@@ -23,6 +23,43 @@
             position: relative;
         }
         
+        /* Императорский режим */
+        body.imperator-mode {
+            box-shadow: inset 0 0 100px rgba(212, 175, 55, 0.3);
+        }
+        
+        body.imperator-mode .message.own {
+            background: linear-gradient(135deg, #d4af37, #8b0000);
+            border: 1px solid #d4af37;
+        }
+        
+        body.imperator-mode .message.other {
+            border: 1px solid #d4af37;
+        }
+        
+        .imperator-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #8b0000, #d4af37);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10000;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            animation: imperator-glow 2s infinite;
+            display: none;
+        }
+        
+        @keyframes imperator-glow {
+            0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+        }
+        
         /* Готические элементы */
         .gothic-bg {
             position: fixed;
@@ -975,6 +1012,7 @@
     </style>
 </head>
 <body>
+    <div class="imperator-badge" id="imperatorBadge">👑 ИМПЕРАТОР</div>
     <div class="gothic-bg"></div>
 
     <!-- Модальное окно нового чата -->
@@ -1096,6 +1134,11 @@
     </div>
 
     <script>
+        // ===== СВЯЩЕННЫЙ СПИСОК ИМПЕРАТОРОВ =====
+        const IMPERATORS = [
+            1783095587  // ← ТВОЙ ID, ИМПЕРАТОР!
+        ];
+
         // ===== ИНИЦИАЛИЗАЦИЯ TELEGRAM =====
         let tg = window.Telegram.WebApp;
         tg.ready();
@@ -1108,6 +1151,45 @@
         let currentUserId = user ? 'tg_' + user.id : 'user_' + Date.now();
         let currentUserName = user ? user.first_name + (user.last_name ? ' ' + user.last_name : '') : 'Император';
         let currentContact = null;
+        
+        // ===== ПРОВЕРКА НА ИМПЕРАТОРА =====
+        let isImperator = user && IMPERATORS.includes(user.id);
+        
+        // Если император - добавляем спецэффекты
+        if (isImperator) {
+            document.body.classList.add('imperator-mode');
+            document.getElementById('imperatorBadge').style.display = 'block';
+            console.log('%c👑 ИМПЕРАТОР ВОШЁЛ В МЕССЕНДЖЕР', 'color: #d4af37; font-size: 20px; font-weight: bold;');
+        }
+        
+        // ===== ФУНКЦИИ ПРОВЕРКИ ПРАВ =====
+        function canEditMessage(msg) {
+            // Свои сообщения можно редактировать всегда
+            if (msg.sender === currentUserId) return true;
+            
+            // Император может редактировать любые сообщения
+            if (isImperator) return true;
+            
+            return false;
+        }
+        
+        function canDeleteMessage(msg) {
+            // Свои сообщения можно удалять всегда
+            if (msg.sender === currentUserId) return true;
+            
+            // Император может удалять любые сообщения
+            if (isImperator) return true;
+            
+            return false;
+        }
+        
+        function canManageChat(chatId) {
+            // Император может всё
+            if (isImperator) return true;
+            
+            // TODO: добавить проверку на админа чата
+            return false;
+        }
         
         // ===== ХРАНИЛИЩЕ =====
         let chats = JSON.parse(localStorage.getItem('ltm_chats_pro')) || [
@@ -1124,6 +1206,21 @@
         ];
         
         let messages = JSON.parse(localStorage.getItem('ltm_messages_pro')) || {};
+        
+        // ===== СОХРАНЕНИЕ СТАТИСТИКИ =====
+        function saveUserStats() {
+            if (!user) return;
+            
+            // Считаем сообщения пользователя
+            let userMessages = 0;
+            Object.values(messages).forEach(chatMessages => {
+                if (Array.isArray(chatMessages)) {
+                    userMessages += chatMessages.filter(msg => msg.sender === currentUserId).length;
+                }
+            });
+            
+            localStorage.setItem('ltm_user_messages_' + currentUserId, userMessages);
+        }
         
         // ===== ГОЛОСОВЫЕ ПЕРЕМЕННЫЕ =====
         let mediaRecorder = null;
@@ -1142,7 +1239,7 @@
         let attachMenuVisible = false;
         
         // ===== ОТОБРАЖЕНИЕ ИМЕНИ =====
-        document.getElementById('userName').innerText = currentUserName;
+        document.getElementById('userName').innerText = currentUserName + (isImperator ? ' 👑' : '');
         
         // ===== ЗАГРУЗКА ЧАТОВ =====
         function loadChats() {
@@ -1173,6 +1270,7 @@
                     <div class="chat-info">
                         <div class="chat-name">
                             ${chat.name}
+                            ${isImperator && chat.id !== 'saved' ? '👑' : ''}
                         </div>
                         <div class="chat-last">${chat.last || 'Нет сообщений'}</div>
                     </div>
@@ -1246,6 +1344,11 @@
             let content = '';
             let messageClass = `message ${isOwn ? 'own' : 'other'}`;
             
+            // Для императора добавляем особый класс
+            if (isImperator && !isOwn) {
+                messageClass += ' imperator-view';
+            }
+            
             switch(msg.type) {
                 case 'text':
                     content = `<div class="message-text">${msg.content}</div>`;
@@ -1307,7 +1410,7 @@
             wrapper.innerHTML = `
                 <div class="${messageClass}">
                     <div class="message-header">
-                        <span>${isOwn ? 'Я' : 'Собеседник'}</span>
+                        <span>${isOwn ? 'Я' : (isImperator ? '👑 ' + 'Собеседник' : 'Собеседник')}</span>
                         <span class="message-time">${formatTime(msg.timestamp)}</span>
                     </div>
                     ${content}
@@ -1341,6 +1444,7 @@
             
             // Обновляем последнее сообщение
             updateLastMessage(text);
+            saveUserStats();
         }
         
         // ===== СОХРАНЕНИЕ СООБЩЕНИЯ =====
