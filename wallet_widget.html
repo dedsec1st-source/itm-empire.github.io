@@ -1,0 +1,49 @@
+<!-- ВСТАВИТЬ В ЛЮБОЙ ФАЙЛ (index.html, messenger.html, profile.html) -->
+<div id="wallet-container"></div>
+
+<script>
+// Подключаем финансовую систему
+// (вставить после подключения wallet.js)
+
+// Инициализация для текущего пользователя
+let finance = new LTMFinance(currentUserId);
+createWalletWidget(finance, 'wallet-container');
+
+// Пример использования в кликере
+let clicker = new LTMClickerIntegration(finance);
+
+// При клике
+document.getElementById('coin').addEventListener('click', () => {
+    let result = clicker.handleClick();
+    console.log(`Заработано: ${result.earned} LTM`);
+});
+
+// Пример в ленте
+let likes = new LTMLikesIntegration(finance);
+
+// Когда лайкают пост
+function onPostLiked(postId, authorId) {
+    let authorFinance = new LTMFinance('tg_' + authorId);
+    let authorLikes = new LTMLikesIntegration(authorFinance);
+    authorLikes.receiveLike();
+}
+
+// Магазин
+let shop = new LTMShop(finance);
+
+// Показать товары
+function showShop() {
+    let items = shop.getItems('boosts');
+    console.log('Бусты:', items);
+}
+
+// Купить
+function buyItem(itemId) {
+    let result = shop.buy(itemId);
+    if (result.success) {
+        alert(`✅ Куплено: ${result.item.name}`);
+    } else {
+        alert(`❌ ${result.error}`);
+    }
+}
+</script>
