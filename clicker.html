@@ -281,11 +281,14 @@
         
         /* Анимация для флоатеров */
         .floating-text {
-            position: absolute;
+            position: fixed;
             color: #d4af37;
             font-weight: bold;
+            font-size: 18px;
+            text-shadow: 0 0 10px #8b0000;
             animation: floatUp 1s ease-out forwards;
             pointer-events: none;
+            z-index: 1000;
         }
         
         @keyframes floatUp {
@@ -423,6 +426,8 @@
         
         // Обработка клика
         function handleClick(event) {
+            console.log('Клик!', gameState.energy); // Для отладки
+            
             if (gameState.energy <= 0) {
                 setStatus('⚡ Нет энергии! Купи энергию в магазине');
                 return;
@@ -444,14 +449,16 @@
             localStorage.setItem('ltm_user_clicks_' + currentUserId, userClicks);
             
             // Создаём флоатер
-            let floating = document.createElement('div');
-            floating.className = 'floating-text';
-            floating.innerText = '+' + earned.toFixed(2) + ' LTM';
-            floating.style.left = (event.clientX - 20) + 'px';
-            floating.style.top = (event.clientY - 30) + 'px';
-            document.body.appendChild(floating);
-            
-            setTimeout(() => floating.remove(), 1000);
+            if (event) {
+                let floating = document.createElement('div');
+                floating.className = 'floating-text';
+                floating.innerText = '+' + earned.toFixed(2) + ' LTM';
+                floating.style.left = (event.clientX - 30) + 'px';
+                floating.style.top = (event.clientY - 40) + 'px';
+                document.body.appendChild(floating);
+                
+                setTimeout(() => floating.remove(), 1000);
+            }
             
             // Вибрация
             if (tg.HapticFeedback) {
@@ -496,7 +503,7 @@
                         gameState.energy--;
                         updateUI();
                     }
-                }, 60000 / gameState.autoClicker); //每分钟点击次数
+                }, 60000 / gameState.autoClicker);
             }
         }
         
@@ -532,6 +539,10 @@
                 `;
             });
             
+            if (leaderboard.length === 0) {
+                html = '<div style="text-align: center; color: #888; padding: 20px;">Пока нет данных</div>';
+            }
+            
             document.getElementById('leaderboard').innerHTML = html;
         }
         
@@ -556,6 +567,9 @@
         tg.MainButton.onClick(() => {
             window.location.href = 'index.html';
         });
+        
+        // Для отладки - проверяем что функция доступна
+        console.log('handleClick доступна:', typeof handleClick);
     </script>
 </body>
 </html>
