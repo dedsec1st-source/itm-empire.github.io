@@ -21,140 +21,353 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+        }
+        
+        /* Готический фон */
+        .gothic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, #1a1a1a 0%, #0a0a0a 80%);
+            opacity: 0.9;
+            z-index: -1;
+        }
+        
+        .gothic-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M20 20 L30 20 L25 10 Z" fill="%238b0000"/><circle cx="70" cy="30" r="5" fill="%238b0000"/><path d="M80 70 Q85 75 90 70" stroke="%238b0000" fill="none" stroke-width="2"/></svg>');
+            background-repeat: repeat;
+            pointer-events: none;
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             width: 100%;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
         
         .header {
             margin-bottom: 40px;
+            animation: fadeIn 1s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .title {
-            font-size: 48px;
+            font-size: 64px;
             color: #d4af37;
-            text-shadow: 0 0 20px #8b0000;
+            text-shadow: 0 0 30px #8b0000, 0 0 60px rgba(139,0,0,0.5);
             margin-bottom: 10px;
+            letter-spacing: 4px;
+            font-weight: bold;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title::before {
+            content: '🏴';
+            font-size: 48px;
+            position: absolute;
+            left: -60px;
+            top: 10px;
+            opacity: 0.8;
+        }
+        
+        .title::after {
+            content: '🏴';
+            font-size: 48px;
+            position: absolute;
+            right: -60px;
+            top: 10px;
+            opacity: 0.8;
         }
         
         .subtitle {
             color: #8b0000;
-            font-size: 18px;
-            letter-spacing: 2px;
+            font-size: 20px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            text-shadow: 0 0 10px rgba(139,0,0,0.5);
         }
         
         .user-info {
-            background: #1a1a1a;
-            border: 1px solid #8b0000;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid #8b0000;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+        }
+        
+        .user-info:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(139,0,0,0.3);
         }
         
         .avatar {
-            width: 64px;
-            height: 64px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background: #8b0000;
+            background: linear-gradient(135deg, #8b0000, #4a0000);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 40px;
             color: #d4af37;
-            border: 2px solid #d4af37;
+            border: 3px solid #d4af37;
+            box-shadow: 0 0 20px rgba(139,0,0,0.5);
+            overflow: hidden;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-details {
+            flex: 1;
+            text-align: left;
         }
         
         .user-name {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             color: #d4af37;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-badge {
+            background: #8b0000;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .user-id {
             color: #888;
             font-size: 14px;
-            margin-top: 5px;
+            word-break: break-all;
+            background: #1a1a1a;
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid #2a2a2a;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            color: #888;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            color: #d4af37;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
         }
         
         .menu {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
             margin-top: 30px;
         }
         
         .menu-item {
-            background: #1a1a1a;
-            border: 1px solid #8b0000;
-            border-radius: 15px;
-            padding: 30px 20px;
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid #8b0000;
+            border-radius: 20px;
+            padding: 35px 20px;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
             color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(139,0,0,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         
         .menu-item:hover {
-            background: #8b0000;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(139,0,0,0.3);
+            transform: translateY(-5px) scale(1.02);
+            border-color: #d4af37;
+            box-shadow: 0 20px 40px rgba(139,0,0,0.4);
+        }
+        
+        .menu-item:hover::before {
+            opacity: 1;
         }
         
         .menu-item .emoji {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 64px;
+            margin-bottom: 20px;
             display: block;
+            transition: transform 0.3s;
+        }
+        
+        .menu-item:hover .emoji {
+            transform: scale(1.1) rotate(5deg);
         }
         
         .menu-item .label {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .menu-item .desc {
             color: #888;
             font-size: 14px;
+            line-height: 1.5;
         }
         
         .menu-item:hover .desc {
+            color: #d4af37;
+        }
+        
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #8b0000;
             color: #fff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid #d4af37;
+        }
+        
+        .badge.new {
+            background: #d4af37;
+            color: #000;
         }
         
         .status {
             margin-top: 40px;
             color: #888;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
         .online-dot {
             display: inline-block;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: #00ff00;
             border-radius: 50%;
-            margin-right: 5px;
+            box-shadow: 0 0 10px #00ff00;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .footer {
+            margin-top: 50px;
+            color: #444;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        
+        .footer a {
+            color: #8b0000;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            color: #d4af37;
         }
     </style>
 </head>
 <body>
+    <div class="gothic-bg"></div>
+    
     <div class="container">
         <div class="header">
-            <div class="title">🏴 LTM EMPIRE</div>
+            <div class="title">LTM EMPIRE</div>
             <div class="subtitle">ANARCHY • MUSIC • FREEDOM</div>
         </div>
         
         <div class="user-info" id="userInfo">
             <div class="avatar" id="userAvatar">💀</div>
-            <div>
-                <div class="user-name" id="userName">Загрузка...</div>
+            <div class="user-details">
+                <div class="user-name">
+                    <span id="userName">Загрузка...</span>
+                    <span class="user-badge" id="userBadge">ИМПЕРАТОР</span>
+                </div>
                 <div class="user-id" id="userId"></div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="statMessages">0</div>
+                        <div class="stat-label">сообщений</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="statClicks">0</div>
+                        <div class="stat-label">кликов</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="statLTM">0</div>
+                        <div class="stat-label">LTM</div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -162,7 +375,22 @@
             <a href="messenger.html" class="menu-item">
                 <span class="emoji">💬</span>
                 <span class="label">Мессенджер</span>
-                <span class="desc">Свободное общение</span>
+                <span class="desc">Личные сообщения, группы и каналы</span>
+                <span class="badge new">NEW</span>
+            </a>
+            
+            <a href="groups.html" class="menu-item">
+                <span class="emoji">👥</span>
+                <span class="label">Группы</span>
+                <span class="desc">Создавай и управляй группами</span>
+                <span class="badge">NEW</span>
+            </a>
+            
+            <a href="channels.html" class="menu-item">
+                <span class="emoji">📢</span>
+                <span class="label">Каналы</span>
+                <span class="desc">Транслируй свои мысли</span>
+                <span class="badge">NEW</span>
             </a>
             
             <a href="clicker.html" class="menu-item">
@@ -174,23 +402,41 @@
             <a href="music.html" class="menu-item">
                 <span class="emoji">🎵</span>
                 <span class="label">Музыка</span>
-                <span class="desc">Свой плеер</span>
+                <span class="desc">Свой плеер и треки</span>
             </a>
             
             <a href="feed.html" class="menu-item">
                 <span class="emoji">📰</span>
                 <span class="label">Лента</span>
-                <span class="desc">Посты и свобода</span>
+                <span class="desc">Посты и свобода слова</span>
+            </a>
+            
+            <a href="admin.html" class="menu-item">
+                <span class="emoji">👑</span>
+                <span class="label">Админка</span>
+                <span class="desc">Статистика империи</span>
+            </a>
+            
+            <a href="profile.html" class="menu-item">
+                <span class="emoji">⚙️</span>
+                <span class="label">Профиль</span>
+                <span class="desc">Настройки и аватар</span>
             </a>
         </div>
         
         <div class="status">
             <span class="online-dot"></span> 
             <span id="onlineStatus">Империя ждет тебя</span>
+            <span id="onlineCount" style="color: #d4af37;">⚔️ 127 онлайн</span>
+        </div>
+        
+        <div class="footer">
+            🏴 LTM EMPIRE · v2.1.0 · <a href="#" onclick="tg.close()">Закрыть</a>
         </div>
     </div>
     
     <script>
+        // Telegram WebApp
         let tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
@@ -198,36 +444,70 @@
         // Получаем данные пользователя из Telegram
         let user = tg.initDataUnsafe?.user;
         
-        if (user) {
-            document.getElementById('userName').textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-            document.getElementById('userId').textContent = 'TG ID: ' + user.id;
-            
-            // Сохраняем в localStorage для других страниц
-            localStorage.setItem('tg_id', user.id);
-            localStorage.setItem('tg_username', user.username || user.first_name);
-            localStorage.setItem('tg_first_name', user.first_name);
-            
-            // Пробуем загрузить аватар
-            if (user.photo_url) {
-                document.getElementById('userAvatar').innerHTML = `<img src="${user.photo_url}" style="width:100%; height:100%; border-radius:50%;">`;
-            } else {
+        // Функция для загрузки аватара
+        function loadUserAvatar() {
+            if (user && user.photo_url) {
+                document.getElementById('userAvatar').innerHTML = `<img src="${user.photo_url}">`;
+            } else if (user) {
                 document.getElementById('userAvatar').textContent = user.first_name.charAt(0).toUpperCase();
             }
         }
         
-        // Показываем статус онлайн
+        // Загрузка статистики пользователя
+        function loadUserStats() {
+            let tgId = user ? 'tg_' + user.id : 'guest';
+            
+            // Получаем данные из localStorage
+            let userMessages = JSON.parse(localStorage.getItem('ltm_user_messages_' + tgId)) || 0;
+            let userClicks = JSON.parse(localStorage.getItem('ltm_user_clicks_' + tgId)) || 0;
+            let userLTM = JSON.parse(localStorage.getItem('ltm_user_ltm_' + tgId)) || 0;
+            
+            document.getElementById('statMessages').innerText = userMessages;
+            document.getElementById('statClicks').innerText = userClicks.toLocaleString();
+            document.getElementById('statLTM').innerText = userLTM.toLocaleString();
+        }
+        
+        // Отображение информации о пользователе
+        if (user) {
+            document.getElementById('userName').innerHTML = `
+                ${user.first_name} ${user.last_name || ''}
+                <span class="user-badge">⚔️ ВОИН</span>
+            `;
+            document.getElementById('userId').innerHTML = `
+                <span style="color: #888;">TG ID:</span> ${user.id}
+            `;
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('tg_id', user.id);
+            localStorage.setItem('tg_username', user.username || user.first_name);
+            localStorage.setItem('tg_first_name', user.first_name);
+            
+            loadUserAvatar();
+            loadUserStats();
+        } else {
+            document.getElementById('userName').innerHTML = 'Гость <span class="user-badge">👤 ГОСТЬ</span>';
+            document.getElementById('userId').innerHTML = 'Войдите через Telegram';
+        }
+        
+        // Симуляция онлайн статуса
         setInterval(() => {
-            fetch('https://itm-empire.github.io/api/heartbeat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({userId: user?.id || 'guest'})
-            }).catch(() => {});
+            let online = Math.floor(Math.random() * 50) + 100;
+            document.getElementById('onlineCount').innerHTML = `⚔️ ${online} онлайн`;
         }, 30000);
         
         // Главная кнопка Telegram
-        tg.MainButton.setText('⚔️ Войти в империю').show();
+        tg.MainButton.setText('🏴 Войти в империю').show();
         tg.MainButton.onClick(() => {
-            tg.showAlert('Добро пожаловать, воин!');
+            tg.showAlert('Добро пожаловать, Император!');
+        });
+        
+        // Обработка клика по аватару
+        document.querySelector('.avatar').addEventListener('click', () => {
+            if (user) {
+                tg.showAlert(`Твой ID: ${user.id}\nИмя: ${user.first_name}`);
+            } else {
+                tg.showAlert('Ты не авторизован');
+            }
         });
     </script>
 </body>
