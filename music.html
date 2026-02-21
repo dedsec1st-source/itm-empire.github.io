@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 LTM Music</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .header {
+            width: 100%;
+            background: #1a1a1a;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #8b0000;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: #d4af37;
+            font-size: 24px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .header-title {
+            color: #d4af37;
+            font-size: 20px;
+            font-weight: bold;
+            flex: 1;
+        }
+        
+        .upload-section {
+            width: 100%;
+            max-width: 400px;
+            background: #1a1a1a;
+            border: 1px solid #8b0000;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .upload-label {
+            display: block;
+            padding: 20px;
+            background: #2a2a2a;
+            border: 2px dashed #8b0000;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .upload-label:hover {
+            background: #3a3a3a;
+            border-color: #d4af37;
+        }
+        
+        .upload-label input {
+            display: none;
+        }
+        
+        .upload-icon {
+            font-size: 40px;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .now-playing {
+            width: 100%;
+            max-width: 400px;
+            background: #1a1a1a;
+            border: 2px solid #8b0000;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .album-art {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #8b0000, #d4af37);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(139,0,0,0.5);
+        }
+        
+        .song-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+        
+        .song-artist {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 5px;
+            background: #2a2a2a;
+            border-radius: 5px;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, #d4af37);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #2a2a2a;
+            border: 1px solid #8b0000;
+            color: #d4af37;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn:hover {
+            background: #8b0000;
+            color: #fff;
+            transform: scale(1.1);
+        }
+        
+        .control-btn.play {
+            width: 60px;
+            height: 60px;
+            background: #8b0000;
+            color: #fff;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .volume-slider {
+            flex: 1;
+            height: 5px;
+            background: #2a2a2a;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .volume-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, #d4af37);
+            border-radius: 5px;
+            width: 50%;
+        }
+        
+        .volume-icon {
+            color: #d4af37;
+            font-size: 18px;
+        }
+        
+        .playlist {
+            width: 100%;
+            max-width: 400px;
+            background: #1a1a1a;
+            border: 1px solid #8b0000;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .playlist h3 {
+            color: #d4af37;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .playlist-items {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #2a2a2a;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .playlist-item:hover {
+            background: #2a2a2a;
+        }
+        
+        .playlist-item.playing {
+            background: #2a2a2a;
+            border-left: 3px solid #8b0000;
+        }
+        
+        .playlist-item .song-info {
+            flex: 1;
+        }
+        
+        .playlist-item .song-name {
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        
+        .playlist-item .song-meta {
+            color: #888;
+            font-size: 11px;
+        }
+        
+        .playlist-item .duration {
+            color: #888;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .playlist-item .remove-btn {
+            color: #8b0000;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .playlist-item .remove-btn:hover {
+            color: #a00;
+        }
+        
+        .empty-playlist {
+            color: #888;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            color: #888;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-btn">←</a>
+        <span class="header-title">🎵 LTM Music</span>
+    </div>
+
+    <div class="upload-section">
+        <label class="upload-label" for="musicFile">
+            <div class="upload-icon">🎵</div>
+            <div class="upload-text">Нажми, чтобы загрузить музыку</div>
+            <div class="upload-text" style="font-size: 11px;">MP3, максимум 20 МБ</div>
+            <input type="file" id="musicFile" accept="audio/mp3,audio/*" onchange="handleFileUpload(this)">
+        </label>
+    </div>
+
+    <div class="now-playing" id="nowPlaying" style="display: none;">
+        <div class="album-art" id="albumArt">🎵</div>
+        <div class="song-title" id="currentTitle">Название трека</div>
+        <div class="song-artist" id="currentArtist">Неизвестный исполнитель</div>
+        
+        <div class="progress-container" onclick="seek(event)">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="time-info">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" onclick="prevTrack()">⏮️</button>
+            <button class="control-btn play" id="playPauseBtn" onclick="togglePlay()">⏸️</button>
+            <button class="control-btn" onclick="nextTrack()">⏭️</button>
+        </div>
+        
+        <div class="volume-control">
+            <span class="volume-icon" onclick="toggleMute()">🔊</span>
+            <div class="volume-slider" onclick="setVolume(event)">
+                <div class="volume-fill" id="volumeFill" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="playlist">
+        <h3>
+            <span>📋 Плейлист</span>
+            <button class="control-btn" style="width: 30px; height: 30px;" onclick="clearPlaylist()" title="Очистить">🗑️</button>
+        </h3>
+        <div class="playlist-items" id="playlistItems">
+            <div class="empty-playlist">
+                🦇 Загрузи свою музыку<br>
+                <span style="font-size: 11px;">Нажми на кнопку загрузки выше</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        🏴 LTM Empire · Свободная музыка
+    </div>
+
+    <audio id="audioPlayer" style="display: none;"></audio>
+
+    <script>
+        // Telegram WebApp
+        let tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        
+        let audioPlayer = document.getElementById('audioPlayer');
+        let currentTrackIndex = -1;
+        let playlist = JSON.parse(localStorage.getItem('ltm_playlist')) || [];
+        let isPlaying = false;
+        let isMuted = false;
+        let volume = 1;
+        
+        // Загрузка плейлиста при старте
+        function loadPlaylist() {
+            let container = document.getElementById('playlistItems');
+            
+            if (playlist.length === 0) {
+                container.innerHTML = '<div class="empty-playlist">🦇 Загрузи свою музыку<br><span style="font-size: 11px;">Нажми на кнопку загрузки выше</span></div>';
+                document.getElementById('nowPlaying').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('nowPlaying').style.display = 'block';
+            
+            let html = '';
+            playlist.forEach((track, index) => {
+                let isCurrent = index === currentTrackIndex;
+                let duration = track.duration || '0:00';
+                
+                html += `
+                    <div class="playlist-item ${isCurrent ? 'playing' : ''}" onclick="playTrack(${index})">
+                        <div class="song-info">
+                            <div class="song-name">${track.name}</div>
+                            <div class="song-meta">${track.artist || 'Неизвестный исполнитель'}</div>
+                        </div>
+                        <div class="duration">${duration}</div>
+                        <button class="remove-btn" onclick="removeTrack(${index}, event)">✕</button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Загрузка файла
+        function handleFileUpload(input) {
+            let file = input.files[0];
+            if (!file) return;
+            
+            if (file.size > 20 * 1024 * 1024) {
+                tg.showAlert('❌ Файл слишком большой (макс 20 МБ)');
+                return;
+            }
+            
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let track = {
+                    id: Date.now(),
+                    name: file.name.replace('.mp3', '').replace('.MP3', ''),
+                    artist: 'LTM Empire',
+                    url: e.target.result,
+                    duration: '0:00'
+                };
+                
+                playlist.push(track);
+                localStorage.setItem('ltm_playlist', JSON.stringify(playlist));
+                
+                loadPlaylist();
+                
+                if (playlist.length === 1) {
+                    playTrack(0);
+                }
+                
+                tg.HapticFeedback?.notificationOccurred('success');
+            };
+            reader.readAsDataURL(file);
+            
+            input.value = '';
+        }
+        
+        // Воспроизведение трека
+        function playTrack(index) {
+            if (index < 0 || index >= playlist.length) return;
+            
+            currentTrackIndex = index;
+            let track = playlist[index];
+            
+            audioPlayer.src = track.url;
+            audioPlayer.load();
+            audioPlayer.play().then(() => {
+                isPlaying = true;
+                document.getElementById('playPauseBtn').innerHTML = '⏸️';
+                
+                // Обновление информации о треке
+                document.getElementById('currentTitle').innerText = track.name;
+                document.getElementById('currentArtist').innerText = track.artist || 'Неизвестный исполнитель';
+                
+                // Обновление длительности
+                audioPlayer.addEventListener('loadedmetadata', function() {
+                    let minutes = Math.floor(audioPlayer.duration / 60);
+                    let seconds = Math.floor(audioPlayer.duration % 60);
+                    let durationStr = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                    track.duration = durationStr;
+                    localStorage.setItem('ltm_playlist', JSON.stringify(playlist));
+                });
+                
+                loadPlaylist();
+            }).catch(e => {
+                console.error('Ошибка воспроизведения:', e);
+            });
+        }
+        
+        // Обновление прогресса
+        audioPlayer.addEventListener('timeupdate', function() {
+            let current = audioPlayer.currentTime;
+            let duration = audioPlayer.duration;
+            
+            if (duration) {
+                let percent = (current / duration) * 100;
+                document.getElementById('progressBar').style.width = percent + '%';
+                
+                let currentMinutes = Math.floor(current / 60);
+                let currentSeconds = Math.floor(current % 60);
+                let currentStr = currentMinutes + ':' + (currentSeconds < 10 ? '0' : '') + currentSeconds;
+                
+                let durationMinutes = Math.floor(duration / 60);
+                let durationSeconds = Math.floor(duration % 60);
+                let durationStr = durationMinutes + ':' + (durationSeconds < 10 ? '0' : '') + durationSeconds;
+                
+                document.getElementById('currentTime').innerText = currentStr;
+                document.getElementById('duration').innerText = durationStr;
+            }
+        });
+        
+        // Переключение play/pause
+        function togglePlay() {
+            if (currentTrackIndex === -1 && playlist.length > 0) {
+                playTrack(0);
+                return;
+            }
+            
+            if (isPlaying) {
+                audioPlayer.pause();
+                document.getElementById('playPauseBtn').innerHTML = '▶️';
+            } else {
+                audioPlayer.play();
+                document.getElementById('playPauseBtn').innerHTML = '⏸️';
+            }
+            
+            isPlaying = !isPlaying;
+        }
+        
+        // Следующий трек
+        function nextTrack() {
+            if (playlist.length === 0) return;
+            let nextIndex = (currentTrackIndex + 1) % playlist.length;
+            playTrack(nextIndex);
+        }
+        
+        // Предыдущий трек
+        function prevTrack() {
+            if (playlist.length === 0) return;
+            let prevIndex = currentTrackIndex - 1;
+            if (prevIndex < 0) prevIndex = playlist.length - 1;
+            playTrack(prevIndex);
+        }
+        
+        // Перемотка
+        function seek(event) {
+            let progressContainer = event.currentTarget;
+            let rect = progressContainer.getBoundingClientRect();
+            let clickX = event.clientX - rect.left;
+            let width = rect.width;
+            let percent = clickX / width;
+            
+            if (audioPlayer.duration) {
+                audioPlayer.currentTime = percent * audioPlayer.duration;
+            }
+        }
+        
+        // Громкость
+        function setVolume(event) {
+            let volumeSlider = event.currentTarget;
+            let rect = volumeSlider.getBoundingClientRect();
+            let clickX = event.clientX - rect.left;
+            let width = rect.width;
+            let newVolume = clickX / width;
+            
+            volume = Math.max(0, Math.min(1, newVolume));
+            audioPlayer.volume = volume;
+            document.getElementById('volumeFill').style.width = (volume * 100) + '%';
+        }
+        
+        // Mute
+        function toggleMute() {
+            isMuted = !isMuted;
+            audioPlayer.muted = isMuted;
+            document.querySelector('.volume-icon').innerHTML = isMuted ? '🔇' : '🔊';
+        }
+        
+        // Удаление трека
+        function removeTrack(index, event) {
+            event.stopPropagation();
+            
+            playlist.splice(index, 1);
+            localStorage.setItem('ltm_playlist', JSON.stringify(playlist));
+            
+            if (index === currentTrackIndex) {
+                audioPlayer.pause();
+                currentTrackIndex = -1;
+                isPlaying = false;
+            } else if (index < currentTrackIndex) {
+                currentTrackIndex--;
+            }
+            
+            loadPlaylist();
+        }
+        
+        // Очистка плейлиста
+        function clearPlaylist() {
+            if (confirm('Очистить весь плейлист?')) {
+                playlist = [];
+                localStorage.setItem('ltm_playlist', JSON.stringify(playlist));
+                audioPlayer.pause();
+                currentTrackIndex = -1;
+                isPlaying = false;
+                loadPlaylist();
+            }
+        }
+        
+        // Автоматическое воспроизведение следующего
+        audioPlayer.addEventListener('ended', function() {
+            nextTrack();
+        });
+        
+        // Загрузка плейлиста
+        loadPlaylist();
+        
+        // Главная кнопка Telegram
+        tg.MainButton.setText('⚔️ LTM Empire').show();
+        tg.MainButton.onClick(() => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
