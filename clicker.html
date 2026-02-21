@@ -382,9 +382,42 @@
         let currentUserId = user ? 'tg_' + user.id : 'guest_' + Date.now();
         let userName = user ? user.first_name : 'Гость';
         
+        // Проверяем, что классы загружены
+        if (typeof LTMFinance === 'undefined') {
+            console.error('❌ LTMFinance не загружен!');
+            alert('Ошибка загрузки финансовой системы. Обновите страницу.');
+        } else {
+            console.log('✅ LTMFinance загружен');
+        }
+        
         // Инициализация финансов
-        let finance = new LTMFinance(currentUserId);
-        let shop = new LTMShop(finance);
+        let finance;
+        try {
+            finance = new LTMFinance(currentUserId);
+            console.log('💰 Финансы инициализированы. Баланс:', finance.getBalance());
+        } catch (e) {
+            console.error('❌ Ошибка создания finance:', e);
+            finance = { 
+                getBalance: () => 0, 
+                add: (amount, reason) => { console.log('Добавлено:', amount, reason); return true; },
+                spend: () => false,
+                subscribe: () => {}
+            };
+        }
+        
+        // Инициализация магазина
+        let shop;
+        try {
+            shop = new LTMShop(finance);
+            console.log('🛒 Магазин инициализирован');
+        } catch (e) {
+            console.error('❌ Ошибка создания shop:', e);
+            shop = { 
+                getItems: () => [], 
+                getInventory: () => [], 
+                applyEffects: (s) => s 
+            };
+        }
         
         // Состояние кликера
         let gameState = {
@@ -396,14 +429,20 @@
             perClick: 0.01
         };
         
+        console.log('🎮 gameState создан:', gameState);
+        
         // Применяем эффекты из магазина
         function applyBoosts() {
-            let stats = shop.applyEffects({ clickMultiplier: 1, autoClicks: 0 });
-            gameState.multiplier = stats.clickMultiplier || 1;
-            gameState.autoClicker = stats.autoClicks || 0;
-            gameState.perClick = 0.01 * gameState.multiplier;
-            
-            updateUI();
+            try {
+                let stats = shop.applyEffects({ clickMultiplier: 1, autoClicks: 0 });
+                gameState.multiplier = stats.clickMultiplier || 1;
+                gameState.autoClicker = stats.autoClicks || 0;
+                gameState.perClick = 0.01 * gameState.multiplier;
+                
+                updateUI();
+            } catch (e) {
+                console.error('Ошибка применения бустов:', e);
+            }
         }
         
         // Обновление интерфейса
@@ -426,7 +465,12 @@
         
         // Обработка клика
         function handleClick(event) {
-            console.log('Клик!', gameState.energy); // Для отладки
+            console.log('🖱️ Клик! Энергия:', gameState.energy);
+            
+            if (!gameState) {
+                console.error('gameState не определен');
+                return;
+            }
             
             if (gameState.energy <= 0) {
                 setStatus('⚡ Нет энергии! Купи энергию в магазине');
@@ -437,7 +481,12 @@
             let earned = gameState.perClick;
             
             // Добавляем в кошелёк
-            finance.add(earned, 'Клик в кликере');
+            try {
+                finance.add(earned, 'Клик в кликере');
+                console.log('💰 Добавлено', earned, 'LTM');
+            } catch (e) {
+                console.error('Ошибка добавления LTM:', e);
+            }
             
             // Обновляем статистику
             gameState.clicks++;
@@ -552,15 +601,22 @@
         }
         
         // Инициализация
-        applyBoosts();
-        updateUI();
-        updateLeaderboard();
-        startAutoClicker();
+        try {
+            applyBoosts();
+            updateUI();
+            updateLeaderboard();
+            startAutoClicker();
+            console.log('✅ Кликер инициализирован');
+        } catch (e) {
+            console.error('Ошибка инициализации:', e);
+        }
         
         // Подписка на изменения баланса
-        finance.subscribe(() => {
-            updateUI();
-        });
+        if (finance.subscribe) {
+            finance.subscribe(() => {
+                updateUI();
+            });
+        }
         
         // Главная кнопка Telegram
         tg.MainButton.setText('⚔️ LTM Empire').show();
@@ -568,8 +624,14 @@
             window.location.href = 'index.html';
         });
         
-        // Для отладки - проверяем что функция доступна
-        console.log('handleClick доступна:', typeof handleClick);
+        // Для отладки - делаем функции глобальными
+        window.debug = {
+            finance,
+            shop,
+            gameState,
+            handleClick,
+            buyBoost
+        };
     </script>
 </body>
 </html>
