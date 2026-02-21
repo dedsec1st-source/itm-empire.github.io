@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💬 LTM Messenger</title>
+    <title>💬 LTM Messenger PRO</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -107,6 +107,7 @@
             cursor: pointer;
             transition: background 0.2s;
             margin-bottom: 5px;
+            position: relative;
         }
         
         .chat-item:hover {
@@ -132,6 +133,13 @@
             position: relative;
         }
         
+        .chat-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
         .online-dot {
             width: 10px;
             height: 10px;
@@ -148,6 +156,14 @@
             display: block;
         }
         
+        .typing-indicator {
+            font-size: 11px;
+            color: #8b0000;
+            position: absolute;
+            bottom: 2px;
+            left: 60px;
+        }
+        
         .chat-info {
             flex: 1;
             overflow: hidden;
@@ -157,6 +173,9 @@
             color: #fff;
             font-weight: bold;
             margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .chat-last {
@@ -171,6 +190,21 @@
             color: #888;
             font-size: 11px;
             margin-left: 8px;
+        }
+        
+        .unread-badge {
+            background: #8b0000;
+            color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            position: absolute;
+            right: 10px;
+            top: 10px;
         }
         
         .messages-area {
@@ -191,12 +225,25 @@
             color: #d4af37;
             font-size: 18px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .current-chat-status {
             color: #888;
             font-size: 13px;
             margin-top: 4px;
+        }
+        
+        .online-status {
+            font-size: 12px;
+            color: #00ff00;
+        }
+        
+        .offline-status {
+            font-size: 12px;
+            color: #888;
         }
         
         .messages-container {
@@ -211,17 +258,22 @@
         .message-wrapper {
             display: flex;
             flex-direction: column;
+            max-width: 70%;
         }
         
         .message-wrapper.own {
-            align-items: flex-end;
+            align-self: flex-end;
+        }
+        
+        .message-wrapper.other {
+            align-self: flex-start;
         }
         
         .message {
-            max-width: 70%;
             padding: 10px 15px;
             border-radius: 18px;
             word-break: break-word;
+            position: relative;
         }
         
         .message.own {
@@ -254,12 +306,77 @@
             line-height: 1.4;
         }
         
+        .message-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .message-audio {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        
+        .audio-player {
+            width: 200px;
+            height: 40px;
+        }
+        
+        .reactions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+            padding: 5px;
+            background: #1a1a1a;
+            border-radius: 20px;
+            width: fit-content;
+        }
+        
+        .reaction {
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 5px;
+            border-radius: 12px;
+            background: #2a2a2a;
+        }
+        
+        .reaction:hover {
+            background: #8b0000;
+        }
+        
+        .reaction.active {
+            background: #8b0000;
+        }
+        
         .input-area {
             background: #1a1a1a;
             padding: 15px;
             display: flex;
             gap: 10px;
             border-top: 1px solid #2a2a2a;
+            align-items: center;
+        }
+        
+        .attach-btn {
+            background: #2a2a2a;
+            border: none;
+            color: #d4af37;
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .attach-btn:hover {
+            background: #8b0000;
+            color: #fff;
         }
         
         .message-input {
@@ -304,6 +421,33 @@
             background: #a00;
         }
         
+        .emoji-picker {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: #2a2a2a;
+            border: 1px solid #8b0000;
+            border-radius: 10px;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            z-index: 100;
+        }
+        
+        .emoji-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .emoji-btn:hover {
+            background: #8b0000;
+            border-radius: 5px;
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -314,7 +458,8 @@
             border-radius: 15px;
             padding: 25px;
             z-index: 1000;
-            width: 300px;
+            width: 90%;
+            max-width: 300px;
             color: #fff;
             border: 1px solid #8b0000;
         }
@@ -375,10 +520,45 @@
             text-align: center;
             padding: 5px;
         }
+        
+        .image-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .image-preview img {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .image-preview .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+        }
+        
+        .typing-notification {
+            color: #8b0000;
+            font-size: 12px;
+            padding: 5px 15px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+    
     <div class="modal" id="chatModal">
         <h3>🦇 Новый чат</h3>
         <input type="text" id="newChatId" placeholder="ID собеседника">
@@ -387,10 +567,15 @@
             <button class="modal-btn secondary" onclick="closeModal()">Отмена</button>
         </div>
     </div>
+    
+    <div class="image-preview" id="imagePreview" onclick="this.style.display='none'">
+        <span class="close" onclick="document.getElementById('imagePreview').style.display='none'">&times;</span>
+        <img id="previewImage" src="">
+    </div>
 
     <div class="header">
         <a href="index.html" class="back-btn">←</a>
-        <span class="header-title">💬 LTM Messenger</span>
+        <span class="header-title">💬 LTM Messenger PRO</span>
         <span class="header-status" id="userStatus"></span>
     </div>
 
@@ -405,18 +590,42 @@
 
         <div class="messages-area">
             <div class="messages-header">
-                <div class="current-chat-name" id="currentChatName">Выберите чат</div>
+                <div class="current-chat-name" id="currentChatName">
+                    Выберите чат
+                    <span id="onlineIndicator"></span>
+                </div>
                 <div class="current-chat-status" id="currentChatStatus"></div>
+                <div class="typing-notification" id="typingNotification"></div>
             </div>
             
             <div class="messages-container" id="messagesContainer"></div>
             
+            <div class="typing-notification" id="ownTyping"></div>
+            
             <div class="input-area">
-                <input type="text" class="message-input" id="messageInput" placeholder="Сообщение..." disabled>
+                <button class="attach-btn" onclick="showAttachmentMenu()">📎</button>
+                <input type="file" id="fileInput" style="display: none;" accept="image/*,audio/*" onchange="handleFileSelect(this)">
+                <input type="text" class="message-input" id="messageInput" placeholder="Сообщение..." disabled oninput="onTyping()">
+                <button class="attach-btn" onclick="toggleEmojiPicker()">😊</button>
                 <button class="send-btn" id="sendButton" onclick="sendMessage()" disabled>➤</button>
             </div>
             <div class="status" id="status"></div>
         </div>
+    </div>
+
+    <div class="emoji-picker" id="emojiPicker" style="display: none;">
+        <button class="emoji-btn" onclick="addEmoji('😊')">😊</button>
+        <button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
+        <button class="emoji-btn" onclick="addEmoji('❤️')">❤️</button>
+        <button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
+        <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
+        <button class="emoji-btn" onclick="addEmoji('💀')">💀</button>
+        <button class="emoji-btn" onclick="addEmoji('🏴')">🏴</button>
+        <button class="emoji-btn" onclick="addEmoji('🦇')">🦇</button>
+        <button class="emoji-btn" onclick="addEmoji('👑')">👑</button>
+        <button class="emoji-btn" onclick="addEmoji('🎵')">🎵</button>
+        <button class="emoji-btn" onclick="addEmoji('📸')">📸</button>
+        <button class="emoji-btn" onclick="addEmoji('🎤')">🎤</button>
     </div>
 
     <script>
@@ -425,14 +634,16 @@
         tg.ready();
         tg.expand();
         
-        // Получаем данные пользователя
+        // Данные пользователя
         let user = tg.initDataUnsafe?.user;
         let currentUserId = user ? 'tg_' + user.id : 'guest_' + Date.now();
         let currentContact = null;
+        let typingTimeout = null;
+        let emojiPickerVisible = false;
         
         // Хранилище данных
         let chats = JSON.parse(localStorage.getItem('ltm_chats')) || [
-            { id: 'saved', name: '💀 Сохранённые', last: 'Нет сообщений', time: '', online: false }
+            { id: 'saved', name: '💀 Сохранённые', last: 'Нет сообщений', time: '', online: true, unread: 0, typing: false }
         ];
         
         let messages = JSON.parse(localStorage.getItem('ltm_messages')) || {};
@@ -454,16 +665,24 @@
                 chatElement.className = 'chat-item';
                 if (currentContact === chat.id) chatElement.classList.add('active');
                 chatElement.onclick = () => selectChat(chat);
+                
+                let typingHtml = chat.typing ? '<div class="typing-indicator">печатает...</div>' : '';
+                let unreadHtml = chat.unread > 0 ? `<div class="unread-badge">${chat.unread}</div>` : '';
+                
                 chatElement.innerHTML = `
                     <div class="chat-avatar">
-                        ${chat.id === 'saved' ? '💀' : '👤'}
+                        ${chat.avatar ? `<img src="${chat.avatar}">` : (chat.id === 'saved' ? '💀' : '👤')}
                         <span class="online-dot ${chat.online ? 'online' : ''}"></span>
                     </div>
                     <div class="chat-info">
-                        <div class="chat-name">${chat.name}</div>
+                        <div class="chat-name">
+                            ${chat.name}
+                            ${typingHtml}
+                        </div>
                         <div class="chat-last">${chat.last}</div>
                     </div>
                     <div class="chat-time">${chat.time || ''}</div>
+                    ${unreadHtml}
                 `;
                 list.appendChild(chatElement);
             });
@@ -473,12 +692,19 @@
         function selectChat(chat) {
             currentContact = chat.id === 'saved' ? null : chat.id;
             
-            document.getElementById('currentChatName').innerText = chat.name;
-            document.getElementById('currentChatStatus').innerText = chat.id === 'saved' ? 'личные заметки' : (chat.online ? '🟢 в сети' : '⚫ офлайн');
+            // Сбрасываем непрочитанные
+            if (chat.unread) {
+                chat.unread = 0;
+                localStorage.setItem('ltm_chats', JSON.stringify(chats));
+            }
+            
+            document.getElementById('currentChatName').innerHTML = chat.name;
+            document.getElementById('currentChatStatus').innerHTML = chat.online ? '<span class="online-status">🟢 в сети</span>' : '<span class="offline-status">⚫ офлайн</span>';
             document.getElementById('messageInput').disabled = false;
             document.getElementById('sendButton').disabled = false;
             
             loadMessages();
+            loadChats();
         }
         
         // Загрузка сообщений
@@ -489,10 +715,8 @@
             let chatMessages = [];
             
             if (!currentContact) {
-                // Сохранённые сообщения
                 chatMessages = messages['saved'] || [];
             } else {
-                // Чат с пользователем
                 const chatId1 = currentUserId + '_' + currentContact;
                 const chatId2 = currentContact + '_' + currentUserId;
                 chatMessages = messages[chatId1] || messages[chatId2] || [];
@@ -505,17 +729,42 @@
             
             chatMessages.forEach(msg => {
                 const isOwn = msg.sender === currentUserId;
-                const time = new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
                 const wrapper = document.createElement('div');
                 wrapper.className = `message-wrapper ${isOwn ? 'own' : 'other'}`;
+                
+                let content = '';
+                
+                if (msg.type === 'image') {
+                    content = `<img src="${msg.content}" class="message-image" onclick="showImage('${msg.content}')">`;
+                } else if (msg.type === 'audio') {
+                    content = `
+                        <div class="message-audio">
+                            <audio controls class="audio-player">
+                                <source src="${msg.content}" type="audio/mp3">
+                            </audio>
+                        </div>
+                    `;
+                } else {
+                    content = `<div class="message-text">${msg.content}</div>`;
+                }
+                
+                let reactionsHtml = '';
+                if (msg.reactions && msg.reactions.length > 0) {
+                    reactionsHtml = '<div class="reactions">';
+                    msg.reactions.forEach(r => {
+                        reactionsHtml += `<span class="reaction" onclick="addReaction(${msg.id}, '${r.emoji}')">${r.emoji} ${r.count}</span>`;
+                    });
+                    reactionsHtml += '</div>';
+                }
+                
                 wrapper.innerHTML = `
-                    <div class="message ${isOwn ? 'own' : 'other'}">
+                    <div class="message ${isOwn ? 'own' : 'other'}" id="msg-${msg.id}">
                         <div class="message-header">
                             <span>${isOwn ? 'Я' : 'Собеседник'}</span>
-                            <span class="message-time">${time}</span>
+                            <span class="message-time">${formatTime(msg.timestamp)}</span>
                         </div>
-                        <div class="message-text">${msg.text}</div>
+                        ${content}
+                        ${reactionsHtml}
                     </div>
                 `;
                 container.appendChild(wrapper);
@@ -534,44 +783,118 @@
             const message = {
                 id: Date.now(),
                 sender: currentUserId,
-                text: text,
-                time: new Date().toISOString()
+                type: 'text',
+                content: text,
+                timestamp: Date.now(),
+                reactions: []
             };
             
-            if (!currentContact) {
-                // Сохранённые сообщения
-                if (!messages['saved']) messages['saved'] = [];
-                messages['saved'].push(message);
-                
-                // Обновляем последнее сообщение в чате
-                const savedChat = chats.find(c => c.id === 'saved');
-                if (savedChat) {
-                    savedChat.last = text.substring(0, 30) + (text.length > 30 ? '...' : '');
-                    savedChat.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                }
-            } else {
-                // Чат с пользователем
-                const chatId = currentUserId + '_' + currentContact;
-                if (!messages[chatId]) messages[chatId] = [];
-                messages[chatId].push(message);
-                
-                // Обновляем последнее сообщение в чате
-                const chat = chats.find(c => c.id === currentContact);
-                if (chat) {
-                    chat.last = text.substring(0, 30) + (text.length > 30 ? '...' : '');
-                    chat.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                }
-            }
-            
-            // Сохраняем в localStorage
-            localStorage.setItem('ltm_messages', JSON.stringify(messages));
-            localStorage.setItem('ltm_chats', JSON.stringify(chats));
+            saveMessage(message);
             
             document.getElementById('messageInput').value = '';
             setStatus('✅ Отправлено');
             
+            // Обновляем последнее сообщение в чате
+            updateLastMessage(text);
+        }
+        
+        // Сохранение сообщения
+        function saveMessage(message) {
+            if (!currentContact) {
+                if (!messages['saved']) messages['saved'] = [];
+                messages['saved'].push(message);
+            } else {
+                const chatId = currentUserId + '_' + currentContact;
+                if (!messages[chatId]) messages[chatId] = [];
+                messages[chatId].push(message);
+            }
+            
+            localStorage.setItem('ltm_messages', JSON.stringify(messages));
             loadMessages();
-            loadChats();
+        }
+        
+        // Обновление последнего сообщения в чате
+        function updateLastMessage(text) {
+            let chat;
+            if (!currentContact) {
+                chat = chats.find(c => c.id === 'saved');
+            } else {
+                chat = chats.find(c => c.id === currentContact);
+            }
+            
+            if (chat) {
+                chat.last = text.substring(0, 30) + (text.length > 30 ? '...' : '');
+                chat.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                localStorage.setItem('ltm_chats', JSON.stringify(chats));
+                loadChats();
+            }
+        }
+        
+        // Отправка фото
+        function handleFileSelect(input) {
+            let file = input.files[0];
+            if (!file) return;
+            
+            setStatus('⏳ Загрузка...');
+            
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let type = file.type.startsWith('image') ? 'image' : 'audio';
+                
+                let message = {
+                    id: Date.now(),
+                    sender: currentUserId,
+                    type: type,
+                    content: e.target.result,
+                    timestamp: Date.now(),
+                    reactions: []
+                };
+                
+                saveMessage(message);
+                setStatus('✅ Файл отправлен');
+                
+                let fileName = file.name.substring(0, 20);
+                updateLastMessage(`📎 ${fileName}`);
+            };
+            
+            if (file.type.startsWith('image')) {
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith('audio')) {
+                reader.readAsDataURL(file);
+            }
+            
+            input.value = '';
+        }
+        
+        // Добавление эмодзи
+        function addEmoji(emoji) {
+            let input = document.getElementById('messageInput');
+            input.value += emoji;
+            toggleEmojiPicker();
+        }
+        
+        // Показать/скрыть эмодзи
+        function toggleEmojiPicker() {
+            emojiPickerVisible = !emojiPickerVisible;
+            document.getElementById('emojiPicker').style.display = emojiPickerVisible ? 'grid' : 'none';
+        }
+        
+        // Меню прикрепления
+        function showAttachmentMenu() {
+            let input = document.getElementById('fileInput');
+            input.accept = 'image/*';
+            input.click();
+        }
+        
+        // Показ изображения
+        function showImage(url) {
+            document.getElementById('previewImage').src = url;
+            document.getElementById('imagePreview').style.display = 'flex';
+        }
+        
+        // Добавление реакции
+        function addReaction(messageId, emoji) {
+            // Здесь будет логика добавления реакций
         }
         
         // Создание чата
@@ -579,7 +902,6 @@
             const contactId = document.getElementById('newChatId').value.trim();
             if (!contactId) return;
             
-            // Проверяем, есть ли уже такой чат
             const exists = chats.some(c => c.id === contactId);
             if (!exists) {
                 chats.push({
@@ -587,7 +909,9 @@
                     name: '👤 Чат с ' + contactId.substring(0,6),
                     last: 'Новый чат',
                     time: '',
-                    online: false
+                    online: false,
+                    unread: 0,
+                    typing: false
                 });
                 localStorage.setItem('ltm_chats', JSON.stringify(chats));
             }
@@ -595,6 +919,24 @@
             loadChats();
             closeModal();
             document.getElementById('newChatId').value = '';
+        }
+        
+        // Печатание
+        function onTyping() {
+            if (!currentContact) return;
+            
+            // Здесь будет отправка статуса "печатает"
+            
+            if (typingTimeout) clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                // Здесь будет отправка "перестал печатать"
+            }, 1000);
+        }
+        
+        // Форматирование времени
+        function formatTime(timestamp) {
+            let date = new Date(timestamp);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
         
         // Модальное окно
@@ -623,7 +965,10 @@
         
         // Закрытие по ESC
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
+            if (e.key === 'Escape') {
+                closeModal();
+                document.getElementById('emojiPicker').style.display = 'none';
+            }
         });
     </script>
 </body>
