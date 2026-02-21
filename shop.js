@@ -1,6 +1,10 @@
 // ===== МАГАЗИН LTM =====
 class LTMShop {
     constructor(finance) {
+        if (!finance) {
+            console.error('LTMShop: finance не передан');
+            return;
+        }
         this.finance = finance;
         this.inventory = [];
         this.items = [
@@ -66,109 +70,33 @@ class LTMShop {
                 type: 'sticker',
                 icon: '🦇',
                 category: 'stickers'
-            },
-            {
-                id: 'sticker_empire',
-                name: '🏴 Флаг империи',
-                description: 'Флаг LTM Empire',
-                price: 20,
-                type: 'sticker',
-                icon: '🏴',
-                category: 'stickers'
-            },
-            
-            // Темы оформления
-            {
-                id: 'theme_gold',
-                name: '✨ Золотая тема',
-                description: 'Императорское золото',
-                price: 100,
-                type: 'theme',
-                cssClass: 'theme-gold',
-                icon: '✨',
-                category: 'themes'
-            },
-            {
-                id: 'theme_blood',
-                name: '🩸 Кровавая тема',
-                description: 'Красный как кровь',
-                price: 80,
-                type: 'theme',
-                cssClass: 'theme-blood',
-                icon: '🩸',
-                category: 'themes'
-            },
-            {
-                id: 'theme_dark',
-                name: '🌑 Тёмная тема',
-                description: 'Классическая готика',
-                price: 50,
-                type: 'theme',
-                cssClass: 'theme-dark',
-                icon: '🌑',
-                category: 'themes'
-            },
-            
-            // Привилегии
-            {
-                id: 'vip_week',
-                name: '👑 VIP на неделю',
-                description: 'Без рекламы, х2 доход',
-                price: 150,
-                type: 'vip',
-                duration: 7, // дней
-                icon: '👑',
-                category: 'vip'
-            },
-            {
-                id: 'vip_month',
-                name: '👑 VIP на месяц',
-                description: 'Без рекламы, х3 доход',
-                price: 500,
-                type: 'vip',
-                duration: 30,
-                icon: '👑',
-                category: 'vip'
-            },
-            
-            // Специальные предметы
-            {
-                id: 'name_color',
-                name: '🌈 Цвет ника',
-                description: 'Выделяйся в чате',
-                price: 30,
-                type: 'special',
-                icon: '🌈',
-                category: 'special'
-            },
-            {
-                id: 'profile_frame',
-                name: '🖼️ Рамка профиля',
-                description: 'Красивая рамка аватара',
-                price: 40,
-                type: 'special',
-                icon: '🖼️',
-                category: 'special'
             }
         ];
-        
         this.load();
     }
     
     // Загрузка инвентаря
     load() {
-        let saved = localStorage.getItem(`ltm_inventory_${this.finance.userId}`);
-        if (saved) {
-            this.inventory = JSON.parse(saved);
-        } else {
-            // Базовые предметы для нового пользователя
+        try {
+            let saved = localStorage.getItem(`ltm_inventory_${this.finance.userId}`);
+            if (saved) {
+                this.inventory = JSON.parse(saved);
+            } else {
+                this.inventory = [];
+            }
+        } catch (e) {
+            console.error('Ошибка загрузки инвентаря:', e);
             this.inventory = [];
         }
     }
     
     // Сохранение инвентаря
     save() {
-        localStorage.setItem(`ltm_inventory_${this.finance.userId}`, JSON.stringify(this.inventory));
+        try {
+            localStorage.setItem(`ltm_inventory_${this.finance.userId}`, JSON.stringify(this.inventory));
+        } catch (e) {
+            console.error('Ошибка сохранения инвентаря:', e);
+        }
     }
     
     // Получить все товары (с фильтром)
@@ -183,10 +111,7 @@ class LTMShop {
     getCategories() {
         return {
             boosts: { name: '⚡ Бусты', icon: '⚡', count: this.items.filter(i => i.category === 'boosts').length },
-            stickers: { name: '🎨 Стикеры', icon: '🎨', count: this.items.filter(i => i.category === 'stickers').length },
-            themes: { name: '🎭 Темы', icon: '🎭', count: this.items.filter(i => i.category === 'themes').length },
-            vip: { name: '👑 VIP', icon: '👑', count: this.items.filter(i => i.category === 'vip').length },
-            special: { name: '✨ Особое', icon: '✨', count: this.items.filter(i => i.category === 'special').length }
+            stickers: { name: '🎨 Стикеры', icon: '🎨', count: this.items.filter(i => i.category === 'stickers').length }
         };
     }
     
@@ -197,12 +122,10 @@ class LTMShop {
             return { success: false, error: 'Товар не найден' };
         }
         
-        // Проверяем, есть ли уже (для уникальных предметов)
-        if (item.type === 'theme' || item.type === 'sticker') {
-            let hasItem = this.inventory.some(i => i.id === itemId);
-            if (hasItem) {
-                return { success: false, error: 'У вас уже есть этот предмет' };
-            }
+        // Проверяем, есть ли уже
+        let hasItem = this.inventory.some(i => i.id === itemId);
+        if (hasItem) {
+            return { success: false, error: 'У вас уже есть этот предмет' };
         }
         
         // Проверяем баланс
@@ -239,49 +162,14 @@ class LTMShop {
         return { success: false, error: 'Ошибка транзакции' };
     }
     
-    // Использовать/экипировать предмет
-    equip(itemId) {
-        let inventoryItem = this.inventory.find(i => i.id === itemId);
-        if (!inventoryItem) {
-            return { success: false, error: 'Предмет не найден' };
-        }
-        
-        // Снимаем предыдущий предмет того же типа
-        let item = this.items.find(i => i.id === itemId);
-        if (item) {
-            this.inventory.forEach(i => {
-                if (i.type === item.type && i.equipped) {
-                    i.equipped = false;
-                }
-            });
-        }
-        
-        inventoryItem.equipped = !inventoryItem.equipped;
-        this.save();
-        
-        return {
-            success: true,
-            equipped: inventoryItem.equipped,
-            item: inventoryItem
-        };
-    }
-    
-    // Получить экипированные предметы
-    getEquipped() {
-        return this.inventory.filter(i => i.equipped);
-    }
-    
     // Получить инвентарь
-    getInventory(type = null) {
-        if (type) {
-            return this.inventory.filter(i => i.type === type);
-        }
+    getInventory() {
         return this.inventory;
     }
     
     // Применить эффекты предметов
     applyEffects(stats) {
-        let equipped = this.getEquipped();
+        let equipped = this.inventory.filter(i => i.equipped);
         
         equipped.forEach(item => {
             let itemData = this.items.find(i => i.id === item.id);
@@ -301,240 +189,7 @@ class LTMShop {
     }
 }
 
-// ===== ИСТОРИЯ ТРАНЗАКЦИЙ (UI КОМПОНЕНТ) =====
-function renderTransactionHistory(transactions, containerId) {
-    let container = document.getElementById(containerId);
-    if (!container) return;
-    
-    let html = '<div class="transactions-list">';
-    
-    transactions.forEach(t => {
-        let date = new Date(t.timestamp).toLocaleString();
-        let sign = t.type === 'income' || t.type === 'transfer_in' ? '+' : '-';
-        let color = t.type === 'income' || t.type === 'transfer_in' ? '#00ff00' : '#8b0000';
-        
-        html += `
-            <div class="transaction-item" style="border-left: 3px solid ${color}; padding: 10px; margin: 5px; background: #1a1a1a; border-radius: 8px;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span>${t.reason || t.type}</span>
-                    <span style="color: ${color};">${sign}${t.amount.toFixed(2)} LTM</span>
-                </div>
-                <div style="font-size: 11px; color: #888; margin-top: 5px;">
-                    ${date} · Баланс: ${t.balance.toFixed(2)} LTM
-                </div>
-            </div>
-        `;
-    });
-    
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-// ===== UI КОМПОНЕНТ КОШЕЛЬКА =====
-function createWalletWidget(finance, containerId) {
-    let container = document.getElementById(containerId);
-    if (!container) return;
-    
-    let widget = document.createElement('div');
-    widget.className = 'wallet-widget';
-    widget.style.cssText = `
-        background: #1a1a1a;
-        border: 1px solid #8b0000;
-        border-radius: 10px;
-        padding: 15px;
-        margin: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    `;
-    
-    widget.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 24px;">💰</span>
-            <div>
-                <div style="color: #888; font-size: 12px;">LTM Balance</div>
-                <div style="color: #d4af37; font-size: 24px; font-weight: bold;" id="wallet-balance">${finance.getBalance().toFixed(2)}</div>
-            </div>
-        </div>
-        <div style="display: flex; gap: 5px;">
-            <button class="wallet-btn" onclick="showTransferModal()" style="background: #2a2a2a; border: 1px solid #8b0000; color: #d4af37; padding: 8px 15px; border-radius: 5px; cursor: pointer;">📤 Перевод</button>
-            <button class="wallet-btn" onclick="showHistoryModal()" style="background: #2a2a2a; border: 1px solid #8b0000; color: #d4af37; padding: 8px 15px; border-radius: 5px; cursor: pointer;">📊 История</button>
-        </div>
-    `;
-    
-    container.appendChild(widget);
-    
-    // Подписка на обновления
-    finance.subscribe((balance) => {
-        document.getElementById('wallet-balance').innerText = balance.toFixed(2);
-    });
-}
-
-// ===== МОДАЛКА ПЕРЕВОДА =====
-function showTransferModal(finance) {
-    let modal = document.createElement('div');
-    modal.className = 'transfer-modal';
-    modal.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #2a2a2a;
-        border: 2px solid #8b0000;
-        border-radius: 15px;
-        padding: 25px;
-        z-index: 10000;
-        width: 90%;
-        max-width: 400px;
-        color: #fff;
-    `;
-    
-    modal.innerHTML = `
-        <h3 style="color: #d4af37; margin-bottom: 20px;">💰 Перевод LTM</h3>
-        <div style="margin-bottom: 15px;">
-            <label style="color: #888;">Баланс: ${finance.getBalance().toFixed(2)} LTM</label>
-        </div>
-        <input type="text" id="transfer-to" placeholder="ID пользователя" style="width: 100%; padding: 12px; margin: 10px 0; background: #3a3a3a; border: 1px solid #8b0000; border-radius: 8px; color: #fff;">
-        <input type="number" id="transfer-amount" placeholder="Сумма LTM" min="0.01" step="0.01" style="width: 100%; padding: 12px; margin: 10px 0; background: #3a3a3a; border: 1px solid #8b0000; border-radius: 8px; color: #fff;">
-        <input type="text" id="transfer-comment" placeholder="Комментарий (необязательно)" style="width: 100%; padding: 12px; margin: 10px 0; background: #3a3a3a; border: 1px solid #8b0000; border-radius: 8px; color: #fff;">
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button onclick="doTransfer()" style="flex: 1; background: #8b0000; color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer;">Перевести</button>
-            <button onclick="closeTransferModal()" style="flex: 1; background: #3a3a3a; color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer;">Отмена</button>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Фон
-    let overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.8);
-        z-index: 9999;
-    `;
-    overlay.onclick = closeTransferModal;
-    document.body.appendChild(overlay);
-    
-    window.doTransfer = function() {
-        let to = document.getElementById('transfer-to').value.trim();
-        let amount = parseFloat(document.getElementById('transfer-amount').value);
-        let comment = document.getElementById('transfer-comment').value.trim();
-        
-        if (!to) {
-            alert('Введите ID получателя');
-            return;
-        }
-        
-        if (!amount || amount <= 0) {
-            alert('Введите сумму');
-            return;
-        }
-        
-        let result = finance.transfer(to, amount, comment);
-        
-        if (result.success) {
-            alert(`✅ Переведено ${amount} LTM пользователю ${to}`);
-            closeTransferModal();
-        } else {
-            alert(`❌ Ошибка: ${result.error}`);
-        }
-    };
-}
-
-function closeTransferModal() {
-    document.querySelector('.transfer-modal')?.remove();
-    document.querySelector('.modal-overlay')?.remove();
-}
-
-// ===== МОДАЛКА ИСТОРИИ =====
-function showHistoryModal(finance) {
-    let modal = document.createElement('div');
-    modal.className = 'history-modal';
-    modal.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #2a2a2a;
-        border: 2px solid #8b0000;
-        border-radius: 15px;
-        padding: 25px;
-        z-index: 10000;
-        width: 90%;
-        max-width: 500px;
-        max-height: 80vh;
-        overflow-y: auto;
-        color: #fff;
-    `;
-    
-    let history = finance.getHistory(50);
-    let historyHtml = '';
-    
-    history.forEach(t => {
-        let date = new Date(t.timestamp).toLocaleString();
-        let sign = t.type === 'income' || t.type === 'transfer_in' ? '+' : '-';
-        let color = t.type === 'income' || t.type === 'transfer_in' ? '#00ff00' : '#8b0000';
-        
-        historyHtml += `
-            <div style="border-left: 3px solid ${color}; padding: 10px; margin: 5px; background: #1a1a1a; border-radius: 8px;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span>${t.reason || t.type}</span>
-                    <span style="color: ${color};">${sign}${t.amount.toFixed(2)} LTM</span>
-                </div>
-                <div style="font-size: 11px; color: #888; margin-top: 5px;">
-                    ${date} · Баланс: ${t.balance.toFixed(2)} LTM
-                </div>
-            </div>
-        `;
-    });
-    
-    modal.innerHTML = `
-        <h3 style="color: #d4af37; margin-bottom: 20px;">📊 История операций</h3>
-        <div style="margin-bottom: 15px;">
-            <span style="color: #888;">Текущий баланс: </span>
-            <span style="color: #d4af37; font-size: 20px; font-weight: bold;">${finance.getBalance().toFixed(2)} LTM</span>
-        </div>
-        <div class="history-list">
-            ${historyHtml || '<div style="text-align: center; color: #888; padding: 20px;">Нет операций</div>'}
-        </div>
-        <div style="margin-top: 20px;">
-            <button onclick="closeHistoryModal()" style="width: 100%; background: #3a3a3a; color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer;">Закрыть</button>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    let overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.8);
-        z-index: 9999;
-    `;
-    overlay.onclick = closeHistoryModal;
-    document.body.appendChild(overlay);
-}
-
-function closeHistoryModal() {
-    document.querySelector('.history-modal')?.remove();
-    document.querySelector('.modal-overlay')?.remove();
-}
-
-// ===== ЭКСПОРТ =====
-// Для использования в других файлах
-window.LTMFinance = LTMFinance;
-window.LTMClickerIntegration = LTMClickerIntegration;
-window.LTMLikesIntegration = LTMLikesIntegration;
+// Делаем класс глобально доступным
 window.LTMShop = LTMShop;
-window.createWalletWidget = createWalletWidget;
-window.showTransferModal = showTransferModal;
-window.showHistoryModal = showHistoryModal;
+
+console.log('✅ LTMShop загружен');
