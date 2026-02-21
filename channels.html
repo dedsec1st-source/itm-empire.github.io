@@ -18,6 +18,11 @@
             color: #fff;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+        }
+        
+        body.imperator {
+            box-shadow: inset 0 0 100px rgba(212, 175, 55, 0.3);
         }
         
         .gothic-bg {
@@ -28,6 +33,28 @@
             height: 100%;
             background: radial-gradient(circle at 20% 30%, #1a1a1a 0%, #0a0a0a 80%);
             z-index: -1;
+        }
+        
+        .imperator-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #8b0000, #d4af37);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            z-index: 1000;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+            animation: glow 2s infinite;
+            display: none;
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
         }
         
         .header {
@@ -86,6 +113,11 @@
             padding: 20px;
             cursor: pointer;
             transition: all 0.3s;
+        }
+        
+        .channel-card.imperator {
+            border-color: #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
         }
         
         .channel-card:hover {
@@ -154,6 +186,16 @@
             margin-left: 8px;
         }
         
+        .imperator-badge-small {
+            background: #d4af37;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        
         .modal-overlay {
             display: none;
             position: fixed;
@@ -181,6 +223,11 @@
             color: #fff;
         }
         
+        .modal.imperator {
+            border-color: #d4af37;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.5);
+        }
+        
         .modal h3 {
             color: #d4af37;
             margin-bottom: 20px;
@@ -194,13 +241,6 @@
             border: 1px solid #8b0000;
             border-radius: 8px;
             color: #fff;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
         }
         
         .channel-settings {
@@ -250,10 +290,43 @@
         .toggle.active::after {
             left: 22px;
         }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .modal-btn.primary {
+            background: #8b0000;
+            color: #fff;
+        }
+        
+        .modal-btn.secondary {
+            background: #3a3a3a;
+            color: #fff;
+        }
+        
+        .status {
+            color: #888;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="gothic-bg"></div>
+    
+    <div class="imperator-badge" id="imperatorBadge">👑 ИМПЕРАТОР</div>
     
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
     
@@ -295,13 +368,21 @@
         <!-- Каналы будут загружаться сюда -->
     </div>
 
+    <div class="status" id="status"></div>
+
     <script>
+        // ===== СВЯЩЕННЫЙ СПИСОК ИМПЕРАТОРОВ =====
+        const IMPERATORS = [
+            1783095587  // ← ТВОЙ ID, ИМПЕРАТОР!
+        ];
+
         let tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
         
         let user = tg.initDataUnsafe?.user;
         let currentUserId = user ? 'tg_' + user.id : 'guest_' + Date.now();
+        let isImperator = user && IMPERATORS.includes(user.id);
         
         // Настройки канала
         let channelSettings = {
@@ -310,21 +391,32 @@
             public: true
         };
         
+        // Если император - добавляем спецэффекты
+        if (isImperator) {
+            document.body.classList.add('imperator');
+            document.getElementById('imperatorBadge').style.display = 'block';
+            document.querySelectorAll('.channel-card').forEach(card => {
+                card.classList.add('imperator');
+            });
+            document.getElementById('createChannelModal')?.classList.add('imperator');
+            console.log('%c👑 ИМПЕРАТОР В КАНАЛАХ', 'color: #d4af37; font-size: 20px; font-weight: bold;');
+        }
+        
         // Загрузка каналов
         let channels = JSON.parse(localStorage.getItem('ltm_channels')) || [
             {
-                id: 'channel_1',
+                id: 'channel_' + Date.now() + '_1',
                 name: 'LTM Новости',
                 description: 'Главные новости империи',
                 avatar: '📰',
                 subscribers: 156,
                 posts: 23,
-                admins: [currentUserId],
-                createdBy: currentUserId,
+                admins: isImperator ? [currentUserId] : [],
+                createdBy: isImperator ? currentUserId : 'system',
                 settings: { comments: true, anonymous: false, public: true }
             },
             {
-                id: 'channel_2',
+                id: 'channel_' + Date.now() + '_2',
                 name: 'Музыкальный',
                 description: 'Новые треки каждый день',
                 avatar: '🎵',
@@ -341,9 +433,14 @@
             grid.innerHTML = '';
             
             channels.forEach(channel => {
-                let isAdmin = channel.admins.includes(currentUserId) || channel.createdBy === currentUserId;
+                // Проверяем права админа
+                let isAdmin = channel.admins.includes(currentUserId) || 
+                             channel.createdBy === currentUserId || 
+                             isImperator;  // ← ИМПЕРАТОР ВСЕГДА АДМИН
+                
                 let card = document.createElement('div');
                 card.className = 'channel-card';
+                if (isImperator) card.classList.add('imperator');
                 card.onclick = () => openChannel(channel.id, isAdmin);
                 
                 card.innerHTML = `
@@ -353,6 +450,7 @@
                             <div class="channel-name">
                                 ${channel.name}
                                 ${isAdmin ? '<span class="admin-badge">АДМИН</span>' : ''}
+                                ${channel.createdBy === currentUserId ? '<span class="imperator-badge-small">👑 ВЛАДЕЛЕЦ</span>' : ''}
                             </div>
                             <div class="channel-meta">${channel.subscribers} подписчиков · ${channel.posts} постов</div>
                         </div>
@@ -421,14 +519,22 @@
             loadChannels();
             
             tg.HapticFeedback?.notificationOccurred('success');
+            setStatus('✅ Канал создан');
         }
         
         function openChannel(channelId, isAdmin) {
             if (isAdmin) {
-                tg.showAlert('Управление каналом откроется в следующем обновлении');
+                tg.showAlert('👑 Вы администратор канала. Управление откроется в следующем обновлении');
             } else {
-                tg.showAlert('Подписка на канал будет доступна позже');
+                tg.showAlert('📢 Вы подписались на канал');
             }
+        }
+        
+        function setStatus(text) {
+            document.getElementById('status').innerText = text;
+            setTimeout(() => {
+                document.getElementById('status').innerText = '';
+            }, 2000);
         }
         
         loadChannels();
