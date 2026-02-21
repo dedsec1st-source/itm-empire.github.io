@@ -24,7 +24,10 @@
             position: relative;
         }
         
-        /* Готический фон */
+        body.imperator {
+            box-shadow: inset 0 0 100px rgba(212, 175, 55, 0.3);
+        }
+        
         .gothic-bg {
             position: fixed;
             top: 0;
@@ -48,6 +51,29 @@
             pointer-events: none;
         }
         
+        .imperator-badge {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #8b0000, #d4af37);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10000;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            animation: imperator-glow 2s infinite;
+            display: none;
+        }
+        
+        @keyframes imperator-glow {
+            0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+        }
+        
         .container {
             max-width: 1200px;
             width: 100%;
@@ -59,6 +85,7 @@
         .header {
             margin-bottom: 40px;
             animation: fadeIn 1s ease;
+            position: relative;
         }
         
         @keyframes fadeIn {
@@ -335,10 +362,198 @@
         .footer a:hover {
             color: #d4af37;
         }
+        
+        /* Стили для кошелька */
+        .wallet-widget {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid #8b0000;
+            border-radius: 15px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+        }
+        
+        .wallet-widget:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+        }
+        
+        .wallet-icon {
+            font-size: 28px;
+            color: #d4af37;
+        }
+        
+        .wallet-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .wallet-label {
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .wallet-balance {
+            color: #d4af37;
+            font-size: 22px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        
+        .wallet-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .wallet-btn {
+            background: #2a2a2a;
+            border: 1px solid #8b0000;
+            color: #d4af37;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .wallet-btn:hover {
+            background: #8b0000;
+            color: #fff;
+        }
+        
+        /* Модальные окна */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2a2a2a;
+            border: 2px solid #8b0000;
+            border-radius: 20px;
+            padding: 30px;
+            z-index: 10000;
+            width: 90%;
+            max-width: 400px;
+            color: #fff;
+            display: none;
+        }
+        
+        .modal h3 {
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #3a3a3a;
+            border: 1px solid #8b0000;
+            border-radius: 8px;
+            color: #fff;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .modal-btn.primary {
+            background: #8b0000;
+            color: #fff;
+        }
+        
+        .modal-btn.secondary {
+            background: #3a3a3a;
+            color: #fff;
+        }
+        
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+        
+        .history-item {
+            border-left: 3px solid;
+            padding: 10px;
+            margin: 5px 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+        }
+        
+        .history-item.income {
+            border-left-color: #00ff00;
+        }
+        
+        .history-item.spend {
+            border-left-color: #8b0000;
+        }
     </style>
 </head>
 <body>
     <div class="gothic-bg"></div>
+    
+    <!-- Знак императора -->
+    <div class="imperator-badge" id="imperatorBadge">👑 ИМПЕРАТОР</div>
+    
+    <!-- Виджет кошелька -->
+    <div id="wallet-container"></div>
+    
+    <!-- Модальные окна -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeAllModals()"></div>
+    
+    <div class="modal" id="transferModal">
+        <h3>💰 Перевод LTM</h3>
+        <input type="text" id="transferTo" placeholder="ID получателя">
+        <input type="number" id="transferAmount" placeholder="Сумма LTM" min="0.01" step="0.01">
+        <input type="text" id="transferComment" placeholder="Комментарий (необязательно)">
+        <div class="modal-buttons">
+            <button class="modal-btn primary" onclick="doTransfer()">Перевести</button>
+            <button class="modal-btn secondary" onclick="closeAllModals()">Отмена</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="historyModal">
+        <h3>📊 История операций</h3>
+        <div id="historyList" class="history-list"></div>
+        <div class="modal-buttons">
+            <button class="modal-btn secondary" onclick="closeAllModals()">Закрыть</button>
+        </div>
+    </div>
     
     <div class="container">
         <div class="header">
@@ -417,6 +632,13 @@
                 <span class="desc">Статистика империи</span>
             </a>
             
+            <a href="shop.html" class="menu-item">
+                <span class="emoji">🏪</span>
+                <span class="label">Магазин</span>
+                <span class="desc">Трать LTM на бусты и стикеры</span>
+                <span class="badge new">НОВЫЙ</span>
+            </a>
+            
             <a href="profile.html" class="menu-item">
                 <span class="emoji">⚙️</span>
                 <span class="label">Профиль</span>
@@ -431,11 +653,18 @@
         </div>
         
         <div class="footer">
-            🏴 LTM EMPIRE · v2.1.0 · <a href="#" onclick="tg.close()">Закрыть</a>
+            🏴 LTM EMPIRE · v3.0.0 · <a href="#" onclick="tg.close()">Закрыть</a>
         </div>
     </div>
     
+    <script src="wallet.js"></script>
+    <script src="shop.js"></script>
     <script>
+        // ===== СВЯЩЕННЫЙ СПИСОК ИМПЕРАТОРОВ =====
+        const IMPERATORS = [
+            1783095587  // ← ТВОЙ ID, ИМПЕРАТОР!
+        ];
+
         // Telegram WebApp
         let tg = window.Telegram.WebApp;
         tg.ready();
@@ -443,6 +672,15 @@
         
         // Получаем данные пользователя из Telegram
         let user = tg.initDataUnsafe?.user;
+        let currentUserId = user ? 'tg_' + user.id : 'guest_' + Date.now();
+        let isImperator = user && IMPERATORS.includes(user.id);
+        
+        // Если император - добавляем спецэффекты
+        if (isImperator) {
+            document.body.classList.add('imperator');
+            document.getElementById('imperatorBadge').style.display = 'block';
+            console.log('%c👑 ИМПЕРАТОР ВОШЁЛ В СИСТЕМУ', 'color: #d4af37; font-size: 20px; font-weight: bold;');
+        }
         
         // Функция для загрузки аватара
         function loadUserAvatar() {
@@ -460,18 +698,18 @@
             // Получаем данные из localStorage
             let userMessages = JSON.parse(localStorage.getItem('ltm_user_messages_' + tgId)) || 0;
             let userClicks = JSON.parse(localStorage.getItem('ltm_user_clicks_' + tgId)) || 0;
-            let userLTM = JSON.parse(localStorage.getItem('ltm_user_ltm_' + tgId)) || 0;
+            let userLTM = JSON.parse(localStorage.getItem('ltm_balance_' + tgId)) || 0;
             
             document.getElementById('statMessages').innerText = userMessages;
             document.getElementById('statClicks').innerText = userClicks.toLocaleString();
-            document.getElementById('statLTM').innerText = userLTM.toLocaleString();
+            document.getElementById('statLTM').innerText = userLTM.toFixed(2);
         }
         
         // Отображение информации о пользователе
         if (user) {
             document.getElementById('userName').innerHTML = `
                 ${user.first_name} ${user.last_name || ''}
-                <span class="user-badge">⚔️ ВОИН</span>
+                ${isImperator ? '<span class="user-badge">👑 ИМПЕРАТОР</span>' : '<span class="user-badge">⚔️ ВОИН</span>'}
             `;
             document.getElementById('userId').innerHTML = `
                 <span style="color: #888;">TG ID:</span> ${user.id}
@@ -488,6 +726,90 @@
             document.getElementById('userName').innerHTML = 'Гость <span class="user-badge">👤 ГОСТЬ</span>';
             document.getElementById('userId').innerHTML = 'Войдите через Telegram';
         }
+        
+        // ===== ФИНАНСОВАЯ СИСТЕМА =====
+        let finance;
+        
+        if (user) {
+            finance = new LTMFinance(currentUserId);
+        } else {
+            finance = new LTMFinance('guest');
+        }
+        
+        // Создаём виджет кошелька
+        createWalletWidget(finance, 'wallet-container');
+        
+        // Глобальные функции для модалок
+        window.showTransferModal = function() {
+            document.getElementById('transferModal').style.display = 'block';
+            document.getElementById('modalOverlay').style.display = 'block';
+        };
+        
+        window.showHistoryModal = function() {
+            let history = finance.getHistory(50);
+            let list = document.getElementById('historyList');
+            list.innerHTML = '';
+            
+            history.forEach(t => {
+                let date = new Date(t.timestamp).toLocaleString();
+                let type = t.type === 'income' || t.type === 'transfer_in' ? 'income' : 'spend';
+                let sign = t.type === 'income' || t.type === 'transfer_in' ? '+' : '-';
+                
+                let item = document.createElement('div');
+                item.className = `history-item ${type}`;
+                item.innerHTML = `
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>${t.reason || t.type}</span>
+                        <span style="color: ${type === 'income' ? '#00ff00' : '#8b0000'};">${sign}${t.amount.toFixed(2)} LTM</span>
+                    </div>
+                    <div style="font-size: 11px; color: #888; margin-top: 5px;">
+                        ${date} · Баланс: ${t.balance.toFixed(2)} LTM
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            
+            if (history.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">Нет операций</div>';
+            }
+            
+            document.getElementById('historyModal').style.display = 'block';
+            document.getElementById('modalOverlay').style.display = 'block';
+        };
+        
+        window.doTransfer = function() {
+            let to = document.getElementById('transferTo').value.trim();
+            let amount = parseFloat(document.getElementById('transferAmount').value);
+            let comment = document.getElementById('transferComment').value.trim();
+            
+            if (!to) {
+                alert('Введите ID получателя');
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                alert('Введите сумму');
+                return;
+            }
+            
+            let result = finance.transfer(to, amount, comment);
+            
+            if (result.success) {
+                alert(`✅ Переведено ${amount} LTM пользователю ${to}`);
+                closeAllModals();
+                document.getElementById('transferTo').value = '';
+                document.getElementById('transferAmount').value = '';
+                document.getElementById('transferComment').value = '';
+            } else {
+                alert(`❌ Ошибка: ${result.error}`);
+            }
+        };
+        
+        window.closeAllModals = function() {
+            document.getElementById('transferModal').style.display = 'none';
+            document.getElementById('historyModal').style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
+        };
         
         // Симуляция онлайн статуса
         setInterval(() => {
