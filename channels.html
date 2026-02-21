@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📢 LTM Каналы</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .gothic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, #1a1a1a 0%, #0a0a0a 80%);
+            z-index: -1;
+        }
+        
+        .header {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid #8b0000;
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 25px;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: #d4af37;
+            font-size: 24px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .header-title {
+            color: #d4af37;
+            font-size: 24px;
+            font-weight: bold;
+            flex: 1;
+        }
+        
+        .create-btn {
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .channel-card {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #8b0000;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .channel-card:hover {
+            transform: translateY(-5px);
+            border-color: #d4af37;
+        }
+        
+        .channel-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .channel-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #8b0000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #d4af37;
+        }
+        
+        .channel-info {
+            flex: 1;
+        }
+        
+        .channel-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        
+        .channel-meta {
+            color: #888;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+        
+        .channel-description {
+            color: #fff;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #1a1a1a;
+            border-radius: 8px;
+        }
+        
+        .channel-stats {
+            display: flex;
+            gap: 15px;
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .admin-badge {
+            background: #8b0000;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 999;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2a2a2a;
+            border: 2px solid #8b0000;
+            border-radius: 20px;
+            padding: 30px;
+            z-index: 1000;
+            width: 90%;
+            max-width: 500px;
+            color: #fff;
+        }
+        
+        .modal h3 {
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+        
+        .modal input, .modal textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #3a3a3a;
+            border: 1px solid #8b0000;
+            border-radius: 8px;
+            color: #fff;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .channel-settings {
+            background: #1a1a1a;
+            border: 1px solid #8b0000;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        
+        .setting-label {
+            color: #888;
+        }
+        
+        .toggle {
+            width: 40px;
+            height: 20px;
+            background: #3a3a3a;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .toggle.active {
+            background: #8b0000;
+        }
+        
+        .toggle::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: 0.2s;
+        }
+        
+        .toggle.active::after {
+            left: 22px;
+        }
+    </style>
+</head>
+<body>
+    <div class="gothic-bg"></div>
+    
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+    
+    <div class="modal" id="createChannelModal">
+        <h3>📢 Создать канал</h3>
+        <input type="text" id="channelName" placeholder="Название канала">
+        <textarea id="channelDescription" placeholder="Описание канала" rows="3"></textarea>
+        
+        <div class="channel-settings">
+            <div class="setting-item">
+                <span class="setting-label">Комментарии</span>
+                <div class="toggle" id="commentsToggle" onclick="toggleSetting('comments')"></div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Анонимные посты</span>
+                <div class="toggle" id="anonymousToggle" onclick="toggleSetting('anonymous')"></div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Подписка для всех</span>
+                <div class="toggle active" id="publicToggle" onclick="toggleSetting('public')"></div>
+            </div>
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="modal-btn primary" onclick="createChannel()">Создать</button>
+            <button class="modal-btn secondary" onclick="closeModal()">Отмена</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">←</a>
+        <span class="header-title">📢 Каналы</span>
+        <button class="create-btn" onclick="showCreateModal()">
+            <span>➕</span> Создать канал
+        </button>
+    </div>
+
+    <div class="channels-grid" id="channelsGrid">
+        <!-- Каналы будут загружаться сюда -->
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        
+        let user = tg.initDataUnsafe?.user;
+        let currentUserId = user ? 'tg_' + user.id : 'guest_' + Date.now();
+        
+        // Настройки канала
+        let channelSettings = {
+            comments: true,
+            anonymous: false,
+            public: true
+        };
+        
+        // Загрузка каналов
+        let channels = JSON.parse(localStorage.getItem('ltm_channels')) || [
+            {
+                id: 'channel_1',
+                name: 'LTM Новости',
+                description: 'Главные новости империи',
+                avatar: '📰',
+                subscribers: 156,
+                posts: 23,
+                admins: [currentUserId],
+                createdBy: currentUserId,
+                settings: { comments: true, anonymous: false, public: true }
+            },
+            {
+                id: 'channel_2',
+                name: 'Музыкальный',
+                description: 'Новые треки каждый день',
+                avatar: '🎵',
+                subscribers: 89,
+                posts: 45,
+                admins: [],
+                createdBy: 'user2',
+                settings: { comments: true, anonymous: true, public: true }
+            }
+        ];
+        
+        function loadChannels() {
+            let grid = document.getElementById('channelsGrid');
+            grid.innerHTML = '';
+            
+            channels.forEach(channel => {
+                let isAdmin = channel.admins.includes(currentUserId) || channel.createdBy === currentUserId;
+                let card = document.createElement('div');
+                card.className = 'channel-card';
+                card.onclick = () => openChannel(channel.id, isAdmin);
+                
+                card.innerHTML = `
+                    <div class="channel-header">
+                        <div class="channel-avatar">${channel.avatar || '📢'}</div>
+                        <div class="channel-info">
+                            <div class="channel-name">
+                                ${channel.name}
+                                ${isAdmin ? '<span class="admin-badge">АДМИН</span>' : ''}
+                            </div>
+                            <div class="channel-meta">${channel.subscribers} подписчиков · ${channel.posts} постов</div>
+                        </div>
+                    </div>
+                    <div class="channel-description">${channel.description}</div>
+                    <div class="channel-stats">
+                        <span>📊 ${channel.posts} постов</span>
+                        <span>👥 ${channel.subscribers}</span>
+                        <span>${channel.settings.comments ? '💬' : '🔇'}</span>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        function toggleSetting(setting) {
+            let toggle = document.getElementById(setting + 'Toggle');
+            channelSettings[setting] = !channelSettings[setting];
+            toggle.classList.toggle('active', channelSettings[setting]);
+        }
+        
+        function showCreateModal() {
+            // Сброс настроек
+            channelSettings = { comments: true, anonymous: false, public: true };
+            document.getElementById('commentsToggle').classList.add('active');
+            document.getElementById('anonymousToggle').classList.remove('active');
+            document.getElementById('publicToggle').classList.add('active');
+            
+            document.getElementById('createChannelModal').style.display = 'block';
+            document.getElementById('modalOverlay').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('createChannelModal').style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+        
+        function createChannel() {
+            let name = document.getElementById('channelName').value.trim();
+            let description = document.getElementById('channelDescription').value.trim();
+            
+            if (!name) {
+                tg.showAlert('Введите название канала');
+                return;
+            }
+            
+            let newChannel = {
+                id: 'channel_' + Date.now(),
+                name: name,
+                description: description || 'Новый канал',
+                avatar: '📢',
+                subscribers: 1,
+                posts: 0,
+                admins: [currentUserId],
+                createdBy: currentUserId,
+                settings: { ...channelSettings }
+            };
+            
+            channels.push(newChannel);
+            localStorage.setItem('ltm_channels', JSON.stringify(channels));
+            
+            closeModal();
+            document.getElementById('channelName').value = '';
+            document.getElementById('channelDescription').value = '';
+            loadChannels();
+            
+            tg.HapticFeedback?.notificationOccurred('success');
+        }
+        
+        function openChannel(channelId, isAdmin) {
+            if (isAdmin) {
+                tg.showAlert('Управление каналом откроется в следующем обновлении');
+            } else {
+                tg.showAlert('Подписка на канал будет доступна позже');
+            }
+        }
+        
+        loadChannels();
+        
+        tg.MainButton.setText('⚔️ LTM Empire').show();
+        tg.MainButton.onClick(() => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
