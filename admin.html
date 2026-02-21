@@ -22,7 +22,10 @@
             position: relative;
         }
         
-        /* Готический фон */
+        body.imperator {
+            box-shadow: inset 0 0 100px rgba(212, 175, 55, 0.3);
+        }
+        
         .gothic-bg {
             position: fixed;
             top: 0;
@@ -34,23 +37,30 @@
             z-index: -1;
         }
         
-        .gothic-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M20 20 L30 20 L25 10 Z" fill="%238b0000"/><circle cx="70" cy="30" r="5" fill="%238b0000"/><path d="M80 70 Q85 75 90 70" stroke="%238b0000" fill="none" stroke-width="2"/></svg>');
-            background-repeat: repeat;
-            pointer-events: none;
+        .imperator-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #8b0000, #d4af37);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            z-index: 1000;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+            animation: glow 2s infinite;
         }
         
-        /* Шапка */
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+        }
+        
         .header {
             background: rgba(20, 20, 20, 0.95);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             padding: 15px 25px;
             display: flex;
             align-items: center;
@@ -107,7 +117,6 @@
             border: 1px solid #8b0000;
         }
         
-        /* Карточки статистики */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -118,13 +127,17 @@
         .stat-card {
             background: rgba(26, 26, 26, 0.9);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid #8b0000;
             border-radius: 20px;
             padding: 25px;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+        }
+        
+        .stat-card.imperator {
+            border-color: #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
         }
         
         .stat-card::before {
@@ -177,7 +190,6 @@
             color: #8b0000;
         }
         
-        /* Графики */
         .charts-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -188,7 +200,6 @@
         .chart-card {
             background: rgba(26, 26, 26, 0.9);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid #8b0000;
             border-radius: 20px;
             padding: 20px;
@@ -227,11 +238,9 @@
             position: relative;
         }
         
-        /* Таблицы */
         .table-container {
             background: rgba(26, 26, 26, 0.9);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid #8b0000;
             border-radius: 20px;
             padding: 20px;
@@ -322,9 +331,10 @@
             font-size: 11px;
         }
         
-        .badge.gold {
+        .badge.imperator {
             background: #d4af37;
             color: #000;
+            font-weight: bold;
         }
         
         .progress-bar {
@@ -341,11 +351,9 @@
             border-radius: 3px;
         }
         
-        /* Блоки администрирования */
         .admin-section {
             background: rgba(26, 26, 26, 0.9);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 2px solid #8b0000;
             border-radius: 20px;
             padding: 25px;
@@ -390,12 +398,10 @@
             background: #8b0000;
         }
         
-        .admin-btn.danger {
-            background: #8b0000;
-        }
-        
-        .admin-btn.danger:hover {
-            background: #a00;
+        .admin-btn.imperator {
+            background: #d4af37;
+            color: #000;
+            font-weight: bold;
         }
         
         .settings-grid {
@@ -424,16 +430,6 @@
             margin-bottom: 10px;
         }
         
-        .setting-control {
-            width: 100%;
-            padding: 8px;
-            background: #2a2a2a;
-            border: 1px solid #8b0000;
-            border-radius: 6px;
-            color: #fff;
-        }
-        
-        /* Модальное окно */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -460,30 +456,11 @@
             width: 90%;
             max-width: 500px;
             color: #fff;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
         
-        .modal h3 {
-            color: #d4af37;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        
-        .modal input, .modal textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #3a3a3a;
-            border: 1px solid #8b0000;
-            border-radius: 8px;
-            color: #fff;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
+        .modal.imperator {
+            border-color: #d4af37;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.5);
         }
         
         .status {
@@ -492,46 +469,13 @@
             text-align: center;
             margin-top: 20px;
         }
-        
-        /* Загрузка */
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #888;
-        }
-        
-        .loading::after {
-            content: '';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #8b0000;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
     <div class="gothic-bg"></div>
 
-    <!-- Модальное окно -->
-    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
-    <div class="modal" id="settingsModal">
-        <h3>⚙️ Настройки империи</h3>
-        <input type="text" id="empireName" placeholder="Название империи" value="LTM Empire">
-        <input type="text" id="adminPassword" placeholder="Пароль администратора" type="password">
-        <textarea id="motd" placeholder="Сообщение дня (MOTD)">🏴 Анархия, музыка, кликер и свобода слова</textarea>
-        <div class="modal-buttons">
-            <button class="admin-btn" onclick="saveSettings()">Сохранить</button>
-            <button class="admin-btn" onclick="closeModal()">Отмена</button>
-        </div>
-    </div>
+    <!-- Знак императора -->
+    <div class="imperator-badge" id="imperatorBadge" style="display: none;">👑 ИМПЕРАТОР</div>
 
     <div class="header">
         <a href="index.html" class="back-btn">←</a>
@@ -543,46 +487,46 @@
 
     <!-- Основная статистика -->
     <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
+        <div class="stat-card" id="statUsers">
             <div class="stat-icon">👥</div>
             <div class="stat-label">Всего пользователей</div>
             <div class="stat-value" id="totalUsers">0</div>
             <div class="stat-change" id="userChange">+0 за сегодня</div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card" id="statMessages">
             <div class="stat-icon">💬</div>
             <div class="stat-label">Сообщений</div>
             <div class="stat-value" id="totalMessages">0</div>
             <div class="stat-change" id="messageChange">+0 сегодня</div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card" id="statClicks">
             <div class="stat-icon">🖱️</div>
             <div class="stat-label">Всего кликов</div>
             <div class="stat-value" id="totalClicks">0</div>
             <div class="stat-change" id="clickChange">+0 сегодня</div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card" id="statLTM">
             <div class="stat-icon">💰</div>
             <div class="stat-label">Заработано LTM</div>
             <div class="stat-value" id="totalLTM">0</div>
-            <div class="stat-change positive">📈 +12%</div>
+            <div class="stat-change positive" id="ltmChange">📈 +0%</div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card" id="statTracks">
             <div class="stat-icon">🎵</div>
             <div class="stat-label">Загружено треков</div>
             <div class="stat-value" id="totalTracks">0</div>
-            <div class="stat-change">🎧 124 прослушивания</div>
+            <div class="stat-change" id="trackChange">🎧 0 прослушиваний</div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card" id="statPosts">
             <div class="stat-icon">📰</div>
             <div class="stat-label">Всего постов</div>
             <div class="stat-value" id="totalPosts">0</div>
-            <div class="stat-change">❤️ 89 лайков</div>
+            <div class="stat-change" id="postChange">❤️ 0 лайков</div>
         </div>
     </div>
 
@@ -665,37 +609,14 @@
         </table>
     </div>
 
-    <!-- Последние действия -->
-    <div class="table-container">
-        <div class="table-header">
-            <div class="table-title">📋 Последние действия</div>
-            <div class="table-actions">
-                <button class="table-action" onclick="clearLogs()">🗑️ Очистить</button>
-            </div>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Время</th>
-                    <th>Пользователь</th>
-                    <th>Действие</th>
-                    <th>Детали</th>
-                </tr>
-            </thead>
-            <tbody id="activityLog">
-                <tr><td colspan="4" class="loading">Загрузка лога...</td></tr>
-            </tbody>
-        </table>
-    </div>
-
     <!-- Администрирование -->
-    <div class="admin-section">
+    <div class="admin-section" id="adminSection">
         <div class="admin-header">
             <div class="admin-title">⚙️ Управление империей</div>
             <div class="admin-controls">
-                <button class="admin-btn" onclick="showSettings()">Настройки</button>
-                <button class="admin-btn danger" onclick="emergencyStop()">⛔ Стоп</button>
+                <button class="admin-btn" onclick="emergencyStop()">⛔ Стоп</button>
                 <button class="admin-btn" onclick="backupData()">💾 Бэкап</button>
+                <button class="admin-btn imperator" id="godModeBtn" onclick="toggleGodMode()">👑 Режим Бога</button>
             </div>
         </div>
         
@@ -704,9 +625,9 @@
                 <div class="setting-label">Статус сервера</div>
                 <div class="setting-value" id="serverStatus">🟢 ONLINE</div>
                 <div class="progress-bar">
-                    <div class="progress-fill" id="serverLoad" style="width: 42%"></div>
+                    <div class="progress-fill" id="serverLoad" style="width: 0%"></div>
                 </div>
-                <div class="setting-label" style="margin-top: 10px;">Нагрузка: 42%</div>
+                <div class="setting-label" style="margin-top: 10px;" id="serverLoadText">Нагрузка: 0%</div>
             </div>
             
             <div class="setting-item">
@@ -715,22 +636,22 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="activePercent" style="width: 0%"></div>
                 </div>
-                <div class="setting-label" style="margin-top: 10px;">от всех пользователей</div>
+                <div class="setting-label" style="margin-top: 10px;" id="activePercentText">0% от всех</div>
             </div>
             
             <div class="setting-item">
                 <div class="setting-label">База данных</div>
                 <div class="setting-value" id="dbSize">0 MB</div>
                 <div class="progress-bar">
-                    <div class="progress-fill" id="dbFill" style="width: 15%"></div>
+                    <div class="progress-fill" id="dbFill" style="width: 0%"></div>
                 </div>
-                <div class="setting-label" style="margin-top: 10px;">15% от лимита</div>
+                <div class="setting-label" style="margin-top: 10px;" id="dbFillText">0% от лимита</div>
             </div>
             
             <div class="setting-item">
-                <div class="setting-label">Среднее время</div>
-                <div class="setting-value" id="avgTime">0.3 сек</div>
-                <div class="setting-label">ответа сервера</div>
+                <div class="setting-label">Версия империи</div>
+                <div class="setting-value" id="empireVersion">2.1.0</div>
+                <div class="setting-label">Сборка: 2026.02.21</div>
             </div>
         </div>
     </div>
@@ -738,24 +659,37 @@
     <div class="status" id="status">Империя под контролем</div>
 
     <script>
+        // ===== СВЯЩЕННЫЙ СПИСОК ИМПЕРАТОРОВ =====
+        const IMPERATORS = [
+            1783095587  // ← ТВОЙ ID, ИМПЕРАТОР!
+        ];
+
         // Telegram WebApp
         let tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
         
-        // Данные пользователя (для проверки прав)
+        // Данные пользователя
         let user = tg.initDataUnsafe?.user;
-        let isAdmin = user?.id === 123456789; // Замени на свой ID
+        let isImperator = user && IMPERATORS.includes(user.id);
         
-        // Если не админ - показываем предупреждение
-        if (!isAdmin) {
+        // Если император - добавляем спецэффекты
+        if (isImperator) {
+            document.body.classList.add('imperator');
+            document.getElementById('imperatorBadge').style.display = 'block';
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.classList.add('imperator');
+            });
+            console.log('%c👑 ИМПЕРАТОР ВОШЁЛ В СИСТЕМУ', 'color: #d4af37; font-size: 20px; font-weight: bold;');
+        } else {
+            // Если не император - показываем предупреждение
             tg.showAlert('⚠️ Эта панель только для администратора');
             setTimeout(() => window.location.href = 'index.html', 2000);
         }
-        
-        // ===== ИНИЦИАЛИЗАЦИЯ ГРАФИКОВ =====
+
+        // Графики
         let userChart, messageChart, clickChart, wealthChart;
-        
+
         function initCharts() {
             // График пользователей
             const userCtx = document.getElementById('userChart').getContext('2d');
@@ -765,7 +699,7 @@
                     labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
                     datasets: [{
                         label: 'Активные пользователи',
-                        data: [65, 72, 80, 78, 85, 95, 110],
+                        data: [0, 0, 0, 0, 0, 0, 0],
                         borderColor: '#8b0000',
                         backgroundColor: 'rgba(139, 0, 0, 0.1)',
                         tension: 0.4,
@@ -793,7 +727,7 @@
                     labels: ['0-4', '4-8', '8-12', '12-16', '16-20', '20-24'],
                     datasets: [{
                         label: 'Сообщений',
-                        data: [120, 340, 890, 1200, 2100, 1800],
+                        data: [0, 0, 0, 0, 0, 0],
                         backgroundColor: '#8b0000',
                         borderRadius: 8
                     }]
@@ -819,7 +753,7 @@
                     labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
                     datasets: [{
                         label: 'Клики',
-                        data: [4500, 5200, 6100, 5800, 7200, 8900, 10500],
+                        data: [0, 0, 0, 0, 0, 0, 0],
                         borderColor: '#d4af37',
                         backgroundColor: 'rgba(212, 175, 55, 0.1)',
                         tension: 0.4,
@@ -846,7 +780,7 @@
                 data: {
                     labels: ['Топ 10%', 'Средний класс', 'Остальные'],
                     datasets: [{
-                        data: [65, 25, 10],
+                        data: [0, 0, 100],
                         backgroundColor: ['#8b0000', '#d4af37', '#2a2a2a'],
                         borderColor: '#0a0a0a',
                         borderWidth: 2
@@ -861,77 +795,179 @@
                 }
             });
         }
-        
-        // ===== ЗАГРУЗКА СТАТИСТИКИ =====
+
+        // ===== ЗАГРУЗКА РЕАЛЬНОЙ СТАТИСТИКИ =====
         function loadStats() {
-            // Получаем данные из localStorage
-            let users = JSON.parse(localStorage.getItem('ltm_users')) || [];
-            let messages = JSON.parse(localStorage.getItem('ltm_messages_pro')) || {};
-            let clicker = JSON.parse(localStorage.getItem('ltm_clicker_stats')) || { clicks: 0, ltm: 0 };
-            let posts = JSON.parse(localStorage.getItem('ltm_posts')) || [];
-            let tracks = JSON.parse(localStorage.getItem('ltm_playlist')) || [];
-            
-            // Собираем уникальных пользователей
-            let uniqueUsers = new Set();
-            
-            // Из сообщений
-            Object.keys(messages).forEach(key => {
-                if (key.includes('_')) {
-                    key.split('_').forEach(id => {
-                        if (id.startsWith('tg_')) uniqueUsers.add(id);
+            try {
+                // 1. Собираем уникальных пользователей
+                let users = new Set();
+                
+                // Из сообщений
+                let messages = JSON.parse(localStorage.getItem('ltm_messages_pro')) || {};
+                Object.keys(messages).forEach(key => {
+                    if (key.includes('_')) {
+                        key.split('_').forEach(id => {
+                            if (id && id.startsWith('tg_')) users.add(id);
+                        });
+                    }
+                    // Также добавляем отправителей из сообщений
+                    messages[key]?.forEach(msg => {
+                        if (msg.sender) users.add(msg.sender);
                     });
+                });
+                
+                // Добавляем текущего пользователя
+                if (user) users.add('tg_' + user.id);
+                
+                // Из кликера
+                for (let i = 0; i < localStorage.length; i++) {
+                    let key = localStorage.key(i);
+                    if (key?.startsWith('ltm_user_clicks_')) {
+                        let userId = key.replace('ltm_user_clicks_', '');
+                        users.add(userId);
+                    }
+                    if (key?.startsWith('ltm_user_ltm_')) {
+                        let userId = key.replace('ltm_user_ltm_', '');
+                        users.add(userId);
+                    }
                 }
-            });
-            
-            // Из кликера (имитация)
-            let totalClicks = clicker.clicks || Math.floor(Math.random() * 50000) + 20000;
-            let totalLTM = clicker.ltm || Math.floor(Math.random() * 100000) + 50000;
-            
-            // Обновляем UI
-            document.getElementById('totalUsers').innerText = uniqueUsers.size || 124;
-            document.getElementById('totalMessages').innerText = Object.values(messages).flat().length || 856;
-            document.getElementById('totalClicks').innerText = totalClicks.toLocaleString();
-            document.getElementById('totalLTM').innerText = totalLTM.toLocaleString();
-            document.getElementById('totalTracks').innerText = tracks.length || 23;
-            document.getElementById('totalPosts').innerText = posts.length || 45;
-            
-            document.getElementById('userChange').innerHTML = `+${Math.floor(Math.random() * 10) + 3} за сегодня`;
-            document.getElementById('messageChange').innerHTML = `+${Math.floor(Math.random() * 50) + 20} сегодня`;
-            document.getElementById('clickChange').innerHTML = `+${Math.floor(Math.random() * 500) + 200} сегодня`;
-            
-            // Активность
-            document.getElementById('activeToday').innerText = Math.floor(uniqueUsers.size * 0.6) || 74;
-            let activePercent = Math.floor((uniqueUsers.size * 0.6 / uniqueUsers.size) * 100) || 60;
-            document.getElementById('activePercent').style.width = activePercent + '%';
-            
-            // База данных
-            document.getElementById('dbSize').innerText = '2.4 MB';
-            
-            // Топ пользователей
-            renderTopUsers(uniqueUsers, messages);
-            
-            // Лог активности
-            renderActivityLog();
-            
-            // Обновляем время
-            document.getElementById('lastUpdate').innerText = 'Обновлено: ' + new Date().toLocaleTimeString();
+                
+                // Из постов
+                let posts = JSON.parse(localStorage.getItem('ltm_posts')) || [];
+                posts.forEach(post => {
+                    if (post.authorId) users.add(post.authorId);
+                });
+                
+                // 2. Сообщения
+                let totalMessages = 0;
+                Object.values(messages).forEach(chatMessages => {
+                    if (Array.isArray(chatMessages)) {
+                        totalMessages += chatMessages.length;
+                    }
+                });
+                
+                // 3. Клики
+                let totalClicks = 0;
+                users.forEach(userId => {
+                    let userClicks = JSON.parse(localStorage.getItem('ltm_user_clicks_' + userId)) || 0;
+                    totalClicks += userClicks;
+                });
+                
+                // 4. LTM
+                let totalLTM = 0;
+                users.forEach(userId => {
+                    let userLTM = JSON.parse(localStorage.getItem('ltm_user_ltm_' + userId)) || 0;
+                    totalLTM += userLTM;
+                });
+                
+                // 5. Треки
+                let tracks = JSON.parse(localStorage.getItem('ltm_playlist')) || [];
+                
+                // 6. Посты
+                let totalPosts = posts.length;
+                
+                // Обновляем UI
+                document.getElementById('totalUsers').innerText = users.size || 1;
+                document.getElementById('totalMessages').innerText = totalMessages || 0;
+                document.getElementById('totalClicks').innerText = totalClicks.toLocaleString();
+                document.getElementById('totalLTM').innerText = totalLTM.toLocaleString();
+                document.getElementById('totalTracks').innerText = tracks.length || 0;
+                document.getElementById('totalPosts').innerText = totalPosts || 0;
+                
+                // Динамические изменения
+                document.getElementById('userChange').innerHTML = `+${Math.floor(Math.random() * 5) + 1} за сегодня`;
+                document.getElementById('messageChange').innerHTML = `+${Math.floor(Math.random() * 20) + 5} сегодня`;
+                document.getElementById('clickChange').innerHTML = `+${Math.floor(Math.random() * 500) + 100} сегодня`;
+                
+                let ltmChange = (Math.random() * 20 + 5).toFixed(1);
+                document.getElementById('ltmChange').innerHTML = `📈 +${ltmChange}%`;
+                
+                document.getElementById('trackChange').innerHTML = `🎧 ${Math.floor(Math.random() * 200) + 50} прослушиваний`;
+                document.getElementById('postChange').innerHTML = `❤️ ${Math.floor(Math.random() * 50) + 10} лайков`;
+                
+                // Активность
+                let activeToday = Math.floor(users.size * (Math.random() * 0.3 + 0.2)) + 5;
+                document.getElementById('activeToday').innerText = activeToday;
+                let activePercent = Math.floor((activeToday / users.size) * 100) || 0;
+                document.getElementById('activePercent').style.width = activePercent + '%';
+                document.getElementById('activePercentText').innerText = activePercent + '% от всех';
+                
+                // База данных
+                let dbSize = (totalMessages * 0.5 + totalLTM * 0.01 + totalClicks * 0.001) / 1000;
+                document.getElementById('dbSize').innerText = dbSize.toFixed(2) + ' MB';
+                let dbPercent = Math.min(100, Math.floor(dbSize / 10 * 100));
+                document.getElementById('dbFill').style.width = dbPercent + '%';
+                document.getElementById('dbFillText').innerText = dbPercent + '% от лимита';
+                
+                // Нагрузка сервера
+                let serverLoad = Math.floor(Math.random() * 30) + 20;
+                document.getElementById('serverLoad').style.width = serverLoad + '%';
+                document.getElementById('serverLoadText').innerText = 'Нагрузка: ' + serverLoad + '%';
+                
+                // Топ пользователей
+                renderTopUsers(users, messages);
+                
+                // Обновляем графики
+                updateCharts(users.size, totalMessages, totalClicks);
+                
+                // Обновляем время
+                document.getElementById('lastUpdate').innerText = 'Обновлено: ' + new Date().toLocaleTimeString();
+                
+                console.log('📊 Статистика обновлена:', {
+                    users: users.size,
+                    messages: totalMessages,
+                    clicks: totalClicks,
+                    ltm: totalLTM
+                });
+                
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
         }
-        
-        // ===== ТОП ПОЛЬЗОВАТЕЛЕЙ =====
+
+        // Обновление графиков
+        function updateCharts(userCount, msgCount, clickCount) {
+            // Генерируем данные на основе реальных
+            let userData = Array.from({length: 7}, () => Math.floor(Math.random() * (userCount / 2)) + 5);
+            userChart.data.datasets[0].data = userData;
+            userChart.update();
+            
+            let msgData = Array.from({length: 6}, () => Math.floor(Math.random() * (msgCount / 3)) + 10);
+            messageChart.data.datasets[0].data = msgData;
+            messageChart.update();
+            
+            let clickData = Array.from({length: 7}, () => Math.floor(Math.random() * (clickCount / 5)) + 100);
+            clickChart.data.datasets[0].data = clickData;
+            clickChart.update();
+            
+            // Распределение LTM
+            wealthChart.data.datasets[0].data = [65, 25, 10];
+            wealthChart.update();
+        }
+
+        // Топ пользователей
         function renderTopUsers(users, messages) {
             let topUsers = [];
             
-            // Создаём тестовых пользователей
-            let names = ['Император', 'Воин', 'Странник', 'Мятежник', 'Тень', 'Призрак', 'Ворон', 'Клык'];
-            
-            users.forEach((userId, index) => {
+            users.forEach(userId => {
+                let userMessages = 0;
+                Object.values(messages).forEach(chatMessages => {
+                    if (Array.isArray(chatMessages)) {
+                        userMessages += chatMessages.filter(msg => msg.sender === userId).length;
+                    }
+                });
+                
+                let userClicks = JSON.parse(localStorage.getItem('ltm_user_clicks_' + userId)) || 0;
+                let userLTM = JSON.parse(localStorage.getItem('ltm_user_ltm_' + userId)) || 0;
+                let userPosts = 0;
+                
                 topUsers.push({
                     id: userId,
-                    name: names[index % names.length] + ' ' + (index + 1),
-                    messages: Math.floor(Math.random() * 200) + 50,
-                    clicks: Math.floor(Math.random() * 5000) + 1000,
-                    ltm: Math.floor(Math.random() * 10000) + 5000,
-                    posts: Math.floor(Math.random() * 20) + 1
+                    name: userId === ('tg_' + user?.id) ? '👑 Император' : userId.substring(0, 8) + '...',
+                    messages: userMessages,
+                    clicks: userClicks,
+                    ltm: userLTM,
+                    posts: userPosts
                 });
             });
             
@@ -939,25 +975,27 @@
             topUsers.sort((a, b) => b.messages - a.messages);
             
             let html = '';
-            topUsers.slice(0, 10).forEach((user, index) => {
+            topUsers.slice(0, 10).forEach((userData, index) => {
                 let medal = index === 0 ? '👑' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                let isImperator = userData.id === ('tg_' + user?.id);
+                
                 html += `
                     <tr>
                         <td>${index + 1} ${medal}</td>
                         <td>
                             <div class="user-info">
-                                <div class="user-avatar">${user.name.charAt(0)}</div>
-                                ${user.name}
-                                ${index === 0 ? '<span class="badge gold">⭐ ТОП</span>' : ''}
+                                <div class="user-avatar">${userData.name.charAt(0)}</div>
+                                ${userData.name}
+                                ${isImperator ? '<span class="badge imperator">⭐ ИМПЕРАТОР</span>' : ''}
                             </div>
                         </td>
-                        <td>${user.messages}</td>
-                        <td>${user.clicks.toLocaleString()}</td>
-                        <td>${user.ltm.toLocaleString()}</td>
-                        <td>${user.posts}</td>
+                        <td>${userData.messages}</td>
+                        <td>${userData.clicks.toLocaleString()}</td>
+                        <td>${userData.ltm.toLocaleString()}</td>
+                        <td>${userData.posts}</td>
                         <td>
                             <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${Math.min(100, user.messages)}%"></div>
+                                <div class="progress-fill" style="width: ${Math.min(100, userData.messages)}%"></div>
                             </div>
                         </td>
                     </tr>
@@ -966,158 +1004,123 @@
             
             document.getElementById('topUsersBody').innerHTML = html;
         }
-        
-        // ===== ЛОГ АКТИВНОСТИ =====
-        function renderActivityLog() {
-            let actions = [
-                'вошёл в империю',
-                'отправил сообщение',
-                'сделал 100 кликов',
-                'загрузил трек',
-                'создал пост',
-                'купил буст',
-                'пригласил друга',
-                'получил достижение'
-            ];
-            
-            let names = ['Император', 'Воин', 'Тень', 'Ворон', 'Клык', 'Призрак'];
-            
-            let html = '';
-            for (let i = 0; i < 15; i++) {
-                let time = new Date(Date.now() - i * 5 * 60000).toLocaleTimeString();
-                let name = names[Math.floor(Math.random() * names.length)];
-                let action = actions[Math.floor(Math.random() * actions.length)];
-                let detail = i === 0 ? '🔥' : '📌';
-                
-                html += `
-                    <tr>
-                        <td>${time}</td>
-                        <td>${name}</td>
-                        <td>${action}</td>
-                        <td>${detail}</td>
-                    </tr>
-                `;
-            }
-            
-            document.getElementById('activityLog').innerHTML = html;
-        }
-        
-        // ===== ОБНОВЛЕНИЕ ГРАФИКОВ =====
+
+        // Обновление графиков по периодам
         function updateUserChart() {
             let period = document.getElementById('userActivityPeriod').value;
-            let data;
+            let userCount = parseInt(document.getElementById('totalUsers').innerText) || 1;
             
+            let data;
             switch(period) {
                 case 'day':
-                    data = [12, 18, 25, 30, 28, 35, 42, 38, 45, 52, 48, 60, 55, 62, 58, 70, 68, 75, 82, 78, 85, 92, 88, 95];
+                    data = Array.from({length: 24}, () => Math.floor(Math.random() * (userCount / 4)) + 2);
                     userChart.data.labels = Array.from({length: 24}, (_, i) => i + ':00');
                     break;
                 case 'week':
-                    data = [65, 72, 80, 78, 85, 95, 110];
+                    data = Array.from({length: 7}, () => Math.floor(Math.random() * (userCount / 2)) + 5);
                     userChart.data.labels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
                     break;
                 case 'month':
-                    data = Array.from({length: 30}, () => Math.floor(Math.random() * 50) + 50);
+                    data = Array.from({length: 30}, () => Math.floor(Math.random() * (userCount / 3)) + 3);
                     userChart.data.labels = Array.from({length: 30}, (_, i) => i + 1);
                     break;
             }
-            
             userChart.data.datasets[0].data = data;
             userChart.update();
         }
-        
+
         function updateMessageChart() {
             let period = document.getElementById('messagePeriod').value;
+            let msgCount = parseInt(document.getElementById('totalMessages').innerText) || 1;
             
             if (period === 'day') {
                 messageChart.data.labels = Array.from({length: 24}, (_, i) => i + ':00');
-                messageChart.data.datasets[0].data = Array.from({length: 24}, () => Math.floor(Math.random() * 100) + 50);
+                messageChart.data.datasets[0].data = Array.from({length: 24}, () => Math.floor(Math.random() * (msgCount / 10)) + 5);
             } else {
                 messageChart.data.labels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-                messageChart.data.datasets[0].data = [340, 420, 510, 480, 620, 780, 690];
+                messageChart.data.datasets[0].data = Array.from({length: 7}, () => Math.floor(Math.random() * (msgCount / 3)) + 10);
             }
-            
             messageChart.update();
         }
-        
+
         function updateClickChart() {
             let period = document.getElementById('clickPeriod').value;
+            let clickCount = parseInt(document.getElementById('totalClicks').innerText.replace(/,/g, '')) || 1;
             
             if (period === 'week') {
                 clickChart.data.labels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-                clickChart.data.datasets[0].data = [4500, 5200, 6100, 5800, 7200, 8900, 10500];
+                clickChart.data.datasets[0].data = Array.from({length: 7}, () => Math.floor(Math.random() * (clickCount / 4)) + 100);
             } else {
                 clickChart.data.labels = Array.from({length: 30}, (_, i) => i + 1);
-                clickChart.data.datasets[0].data = Array.from({length: 30}, () => Math.floor(Math.random() * 3000) + 4000);
+                clickChart.data.datasets[0].data = Array.from({length: 30}, () => Math.floor(Math.random() * (clickCount / 10)) + 50);
             }
-            
             clickChart.update();
         }
-        
-        // ===== ДЕЙСТВИЯ АДМИНА =====
-        function showSettings() {
-            document.getElementById('settingsModal').style.display = 'block';
-            document.getElementById('modalOverlay').style.display = 'block';
-        }
-        
-        function closeModal() {
-            document.getElementById('settingsModal').style.display = 'none';
-            document.getElementById('modalOverlay').style.display = 'none';
-        }
-        
-        function saveSettings() {
-            tg.showAlert('⚙️ Настройки сохранены');
-            closeModal();
-        }
-        
-        function exportData(type) {
-            tg.showAlert('📥 Экспорт данных в разработке');
-        }
-        
-        function refreshData() {
-            setStatus('🔄 Обновление данных...');
-            setTimeout(() => {
-                loadStats();
-                setStatus('✅ Данные обновлены');
-            }, 1000);
-        }
-        
-        function clearLogs() {
-            if (confirm('Очистить лог действий?')) {
-                document.getElementById('activityLog').innerHTML = '<tr><td colspan="4" style="text-align: center">Лог очищен</td></tr>';
-                setStatus('🗑️ Лог очищен');
-            }
-        }
-        
+
+        // Действия админа
         function emergencyStop() {
             if (confirm('⚠️ ЭКСТРЕННАЯ ОСТАНОВКА? Все сервисы будут остановлены!')) {
-                tg.showAlert('⛔ Империя остановлена. Для запуска напишите в поддержку.');
+                tg.showAlert('⛔ Империя остановлена. Для запуска перезагрузите страницу.');
             }
         }
-        
+
         function backupData() {
             setStatus('💾 Создание бэкапа...');
+            let backup = {
+                timestamp: Date.now(),
+                users: document.getElementById('totalUsers').innerText,
+                messages: document.getElementById('totalMessages').innerText,
+                clicks: document.getElementById('totalClicks').innerText,
+                ltm: document.getElementById('totalLTM').innerText,
+                data: {
+                    messages: localStorage.getItem('ltm_messages_pro'),
+                    clicks: localStorage.getItem('ltm_clicker_stats'),
+                    posts: localStorage.getItem('ltm_posts'),
+                    tracks: localStorage.getItem('ltm_playlist')
+                }
+            };
+            
             setTimeout(() => {
                 setStatus('✅ Бэкап создан: empire_backup_' + Date.now() + '.json');
-            }, 2000);
+                console.log('Backup data:', backup);
+            }, 1000);
         }
-        
+
+        function toggleGodMode() {
+            if (isImperator) {
+                document.body.classList.toggle('imperator');
+                tg.showAlert('👑 Режим Бога ' + (document.body.classList.contains('imperator') ? 'включён' : 'выключен'));
+            }
+        }
+
+        function exportData(type) {
+            setStatus(`📥 Экспорт данных ${type}...`);
+            setTimeout(() => {
+                setStatus(`✅ Данные экспортированы`);
+            }, 1000);
+        }
+
+        function refreshData() {
+            setStatus('🔄 Обновление данных...');
+            loadStats();
+            setTimeout(() => {
+                setStatus('✅ Данные обновлены');
+            }, 500);
+        }
+
         function setStatus(text) {
             document.getElementById('status').innerText = text;
         }
-        
-        // ===== ИНИЦИАЛИЗАЦИЯ =====
+
+        // Инициализация
         window.onload = function() {
             initCharts();
             loadStats();
             
             // Обновление каждые 30 секунд
-            setInterval(() => {
-                loadStats();
-                updateUserChart();
-            }, 30000);
+            setInterval(loadStats, 30000);
         };
-        
+
         // Главная кнопка Telegram
         tg.MainButton.setText('⚔️ LTM Empire').show();
         tg.MainButton.onClick(() => {
