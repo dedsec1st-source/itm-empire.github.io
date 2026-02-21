@@ -22,7 +22,6 @@
             overflow: hidden;
         }
         
-        /* Шапка */
         .header {
             background: #1a1a1a;
             padding: 15px;
@@ -38,7 +37,6 @@
             color: #d4af37;
             font-size: 24px;
             cursor: pointer;
-            padding: 5px;
             text-decoration: none;
         }
         
@@ -54,14 +52,12 @@
             font-size: 14px;
         }
         
-        /* Основной контент */
         .main-content {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
         
-        /* Список чатов (слева) */
         .chats-sidebar {
             width: 300px;
             background: #1a1a1a;
@@ -177,7 +173,6 @@
             margin-left: 8px;
         }
         
-        /* Область сообщений (справа) */
         .messages-area {
             flex: 1;
             display: flex;
@@ -259,7 +254,6 @@
             line-height: 1.4;
         }
         
-        /* Поле ввода */
         .input-area {
             background: #1a1a1a;
             padding: 15px;
@@ -310,7 +304,6 @@
             background: #a00;
         }
         
-        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -385,7 +378,6 @@
     </style>
 </head>
 <body>
-    <!-- Модальное окно -->
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
     <div class="modal" id="chatModal">
         <h3>🦇 Новый чат</h3>
@@ -396,36 +388,28 @@
         </div>
     </div>
 
-    <!-- Шапка -->
     <div class="header">
         <a href="index.html" class="back-btn">←</a>
         <span class="header-title">💬 LTM Messenger</span>
         <span class="header-status" id="userStatus"></span>
     </div>
 
-    <!-- Основной контент -->
     <div class="main-content">
-        <!-- Список чатов слева -->
         <div class="chats-sidebar">
             <div class="chats-header">
                 <h3>Чаты</h3>
                 <button class="new-chat-btn" onclick="showModal()">+ Новый чат</button>
             </div>
-            <div class="chats-list" id="chatsList">
-                <div style="color: #777; text-align: center; padding: 20px;">Загрузка...</div>
-            </div>
+            <div class="chats-list" id="chatsList"></div>
         </div>
 
-        <!-- Область сообщений справа -->
         <div class="messages-area">
             <div class="messages-header">
                 <div class="current-chat-name" id="currentChatName">Выберите чат</div>
                 <div class="current-chat-status" id="currentChatStatus"></div>
             </div>
             
-            <div class="messages-container" id="messagesContainer">
-                <div style="color: #777; text-align: center; padding: 20px;">💀 Выберите чат для общения</div>
-            </div>
+            <div class="messages-container" id="messagesContainer"></div>
             
             <div class="input-area">
                 <input type="text" class="message-input" id="messageInput" placeholder="Сообщение..." disabled>
@@ -445,10 +429,13 @@
         let user = tg.initDataUnsafe?.user;
         let currentUserId = user ? 'tg_' + user.id : 'guest_' + Date.now();
         let currentContact = null;
-        let messages = [];
-        let chats = [
-            { id: 'saved', name: '💀 Сохранённые', last: 'Нет сообщений', time: '' }
+        
+        // Хранилище данных
+        let chats = JSON.parse(localStorage.getItem('ltm_chats')) || [
+            { id: 'saved', name: '💀 Сохранённые', last: 'Нет сообщений', time: '', online: false }
         ];
+        
+        let messages = JSON.parse(localStorage.getItem('ltm_messages')) || {};
         
         // Сохраняем инфо о пользователе
         if (user) {
@@ -476,7 +463,7 @@
                         <div class="chat-name">${chat.name}</div>
                         <div class="chat-last">${chat.last}</div>
                     </div>
-                    <div class="chat-time">${chat.time}</div>
+                    <div class="chat-time">${chat.time || ''}</div>
                 `;
                 list.appendChild(chatElement);
             });
@@ -487,20 +474,54 @@
             currentContact = chat.id === 'saved' ? null : chat.id;
             
             document.getElementById('currentChatName').innerText = chat.name;
-            document.getElementById('currentChatStatus').innerText = chat.id === 'saved' ? 'личные заметки' : 'онлайн';
+            document.getElementById('currentChatStatus').innerText = chat.id === 'saved' ? 'личные заметки' : (chat.online ? '🟢 в сети' : '⚫ офлайн');
             document.getElementById('messageInput').disabled = false;
             document.getElementById('sendButton').disabled = false;
             
             loadMessages();
         }
         
-        // Загрузка сообщений (из localStorage для демо)
+        // Загрузка сообщений
         function loadMessages() {
             const container = document.getElementById('messagesContainer');
             container.innerHTML = '';
             
-            // Заглушка
-            container.innerHTML = '<div style="color: #777; text-align: center; padding: 20px;">🦇 Здесь пока пусто</div>';
+            let chatMessages = [];
+            
+            if (!currentContact) {
+                // Сохранённые сообщения
+                chatMessages = messages['saved'] || [];
+            } else {
+                // Чат с пользователем
+                const chatId1 = currentUserId + '_' + currentContact;
+                const chatId2 = currentContact + '_' + currentUserId;
+                chatMessages = messages[chatId1] || messages[chatId2] || [];
+            }
+            
+            if (chatMessages.length === 0) {
+                container.innerHTML = '<div style="color: #777; text-align: center; padding: 20px;">🦇 Нет сообщений</div>';
+                return;
+            }
+            
+            chatMessages.forEach(msg => {
+                const isOwn = msg.sender === currentUserId;
+                const time = new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = `message-wrapper ${isOwn ? 'own' : 'other'}`;
+                wrapper.innerHTML = `
+                    <div class="message ${isOwn ? 'own' : 'other'}">
+                        <div class="message-header">
+                            <span>${isOwn ? 'Я' : 'Собеседник'}</span>
+                            <span class="message-time">${time}</span>
+                        </div>
+                        <div class="message-text">${msg.text}</div>
+                    </div>
+                `;
+                container.appendChild(wrapper);
+            });
+            
+            container.scrollTop = container.scrollHeight;
         }
         
         // Отправка сообщения
@@ -510,11 +531,47 @@
             
             setStatus('⏳ Отправка...');
             
-            // Для демо просто показываем в консоли
-            console.log('Сообщение:', text);
+            const message = {
+                id: Date.now(),
+                sender: currentUserId,
+                text: text,
+                time: new Date().toISOString()
+            };
+            
+            if (!currentContact) {
+                // Сохранённые сообщения
+                if (!messages['saved']) messages['saved'] = [];
+                messages['saved'].push(message);
+                
+                // Обновляем последнее сообщение в чате
+                const savedChat = chats.find(c => c.id === 'saved');
+                if (savedChat) {
+                    savedChat.last = text.substring(0, 30) + (text.length > 30 ? '...' : '');
+                    savedChat.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+            } else {
+                // Чат с пользователем
+                const chatId = currentUserId + '_' + currentContact;
+                if (!messages[chatId]) messages[chatId] = [];
+                messages[chatId].push(message);
+                
+                // Обновляем последнее сообщение в чате
+                const chat = chats.find(c => c.id === currentContact);
+                if (chat) {
+                    chat.last = text.substring(0, 30) + (text.length > 30 ? '...' : '');
+                    chat.time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+            }
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('ltm_messages', JSON.stringify(messages));
+            localStorage.setItem('ltm_chats', JSON.stringify(chats));
             
             document.getElementById('messageInput').value = '';
-            setStatus('✅ Отправлено (демо-режим)');
+            setStatus('✅ Отправлено');
+            
+            loadMessages();
+            loadChats();
         }
         
         // Создание чата
@@ -522,13 +579,18 @@
             const contactId = document.getElementById('newChatId').value.trim();
             if (!contactId) return;
             
-            chats.push({
-                id: contactId,
-                name: '👤 Чат с ' + contactId.substring(0,6),
-                last: 'Новый чат',
-                time: '',
-                online: false
-            });
+            // Проверяем, есть ли уже такой чат
+            const exists = chats.some(c => c.id === contactId);
+            if (!exists) {
+                chats.push({
+                    id: contactId,
+                    name: '👤 Чат с ' + contactId.substring(0,6),
+                    last: 'Новый чат',
+                    time: '',
+                    online: false
+                });
+                localStorage.setItem('ltm_chats', JSON.stringify(chats));
+            }
             
             loadChats();
             closeModal();
@@ -556,7 +618,7 @@
         // Главная кнопка Telegram
         tg.MainButton.setText('⚔️ LTM Empire').show();
         tg.MainButton.onClick(() => {
-            tg.close();
+            window.location.href = 'index.html';
         });
         
         // Закрытие по ESC
