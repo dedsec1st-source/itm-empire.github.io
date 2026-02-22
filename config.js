@@ -8,7 +8,7 @@ const API_BASE_URL = (() => {
         return '';  // относительные пути
     }
     // Если фронтенд на GitHub Pages, а API на сервере
-    return 'http://85.239.60.142';  // явно указываем HTTPS
+    return 'http://85.239.60.142';  // ЯВНО УКАЗЫВАЕМ HTTP
 })();
 
 console.log('🌐 API URL:', API_BASE_URL || '(относительный)');
