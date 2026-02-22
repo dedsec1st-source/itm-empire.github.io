@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>👤 LTM Profile</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="config.js"></script>
     <style>
         * {
             margin: 0;
@@ -137,22 +138,12 @@
                 <div class="stat-value" id="statClicks">0</div>
                 <div class="stat-label">кликов</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value" id="statPosts">0</div>
-                <div class="stat-label">постов</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="statMessages">0</div>
-                <div class="stat-label">сообщений</div>
-            </div>
         </div>
         
         <button class="transfer-btn" onclick="alert('Переводы будут позже')">💰 Перевести LTM</button>
     </div>
 
     <script>
-        const API_BASE_URL = 'http://85.239.60.142:3000';
-
         let tg = window.Telegram.WebApp;
         tg.ready();
 
@@ -168,7 +159,8 @@
             }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/balance/${currentUserId}`);
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/balance/${currentUserId}` : `/api/balance/${currentUserId}`;
+                const response = await fetch(url);
                 const data = await response.json();
                 document.getElementById('statBalance').innerText = data.balance.toFixed(2);
                 document.getElementById('statClicks').innerText = data.clicks;
