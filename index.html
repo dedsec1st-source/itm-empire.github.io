@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
         
         body {
@@ -21,11 +21,6 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            position: relative;
-        }
-        
-        body.imperator {
-            box-shadow: inset 0 0 100px rgba(212, 175, 55, 0.3);
         }
         
         .gothic-bg {
@@ -35,106 +30,34 @@
             width: 100%;
             height: 100%;
             background: radial-gradient(circle at 20% 30%, #1a1a1a 0%, #0a0a0a 80%);
-            opacity: 0.9;
             z-index: -1;
-        }
-        
-        .gothic-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M20 20 L30 20 L25 10 Z" fill="%238b0000"/><circle cx="70" cy="30" r="5" fill="%238b0000"/><path d="M80 70 Q85 75 90 70" stroke="%238b0000" fill="none" stroke-width="2"/></svg>');
-            background-repeat: repeat;
-            pointer-events: none;
-        }
-        
-        .imperator-badge {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background: linear-gradient(135deg, #8b0000, #d4af37);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 10000;
-            border: 2px solid #d4af37;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-            animation: imperator-glow 2s infinite;
-            display: none;
-        }
-        
-        @keyframes imperator-glow {
-            0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
-            50% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.8); }
-            100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
         }
         
         .container {
             max-width: 1200px;
             width: 100%;
-            text-align: center;
-            position: relative;
-            z-index: 1;
         }
         
         .header {
             margin-bottom: 40px;
-            animation: fadeIn 1s ease;
-            position: relative;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            text-align: center;
         }
         
         .title {
             font-size: 64px;
             color: #d4af37;
-            text-shadow: 0 0 30px #8b0000, 0 0 60px rgba(139,0,0,0.5);
+            text-shadow: 0 0 30px #8b0000;
             margin-bottom: 10px;
-            letter-spacing: 4px;
-            font-weight: bold;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .title::before {
-            content: '🏴';
-            font-size: 48px;
-            position: absolute;
-            left: -60px;
-            top: 10px;
-            opacity: 0.8;
-        }
-        
-        .title::after {
-            content: '🏴';
-            font-size: 48px;
-            position: absolute;
-            right: -60px;
-            top: 10px;
-            opacity: 0.8;
         }
         
         .subtitle {
             color: #8b0000;
             font-size: 20px;
             letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-top: 10px;
-            text-shadow: 0 0 10px rgba(139,0,0,0.5);
         }
         
         .user-info {
             background: rgba(26, 26, 26, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 2px solid #8b0000;
             border-radius: 20px;
             padding: 25px;
@@ -142,28 +65,19 @@
             display: flex;
             align-items: center;
             gap: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: all 0.3s;
-        }
-        
-        .user-info:hover {
-            border-color: #d4af37;
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(139,0,0,0.3);
         }
         
         .avatar {
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #8b0000, #4a0000);
+            background: #8b0000;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
             color: #d4af37;
             border: 3px solid #d4af37;
-            box-shadow: 0 0 20px rgba(139,0,0,0.5);
             overflow: hidden;
         }
         
@@ -175,43 +89,17 @@
         
         .user-details {
             flex: 1;
-            text-align: left;
         }
         
         .user-name {
             font-size: 28px;
-            font-weight: bold;
             color: #d4af37;
             margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
-        .user-badge {
-            background: #8b0000;
-            color: #fff;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .user-id {
-            color: #888;
-            font-size: 14px;
-            word-break: break-all;
-            background: #1a1a1a;
-            padding: 8px 15px;
-            border-radius: 10px;
-            border: 1px solid #2a2a2a;
-        }
-        
-        .stats {
+        .user-stats {
             display: flex;
             gap: 30px;
-            color: #888;
         }
         
         .stat {
@@ -225,21 +113,18 @@
         }
         
         .stat-label {
+            color: #888;
             font-size: 12px;
-            text-transform: uppercase;
         }
         
         .menu {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
-            margin-top: 30px;
         }
         
         .menu-item {
             background: rgba(26, 26, 26, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 2px solid #8b0000;
             border-radius: 20px;
             padding: 35px 20px;
@@ -247,60 +132,30 @@
             transition: all 0.3s;
             text-decoration: none;
             color: #fff;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .menu-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, transparent 0%, rgba(139,0,0,0.1) 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
+            text-align: center;
         }
         
         .menu-item:hover {
-            transform: translateY(-5px) scale(1.02);
+            transform: translateY(-5px);
             border-color: #d4af37;
             box-shadow: 0 20px 40px rgba(139,0,0,0.4);
-        }
-        
-        .menu-item:hover::before {
-            opacity: 1;
         }
         
         .menu-item .emoji {
             font-size: 64px;
             margin-bottom: 20px;
             display: block;
-            transition: transform 0.3s;
-        }
-        
-        .menu-item:hover .emoji {
-            transform: scale(1.1) rotate(5deg);
         }
         
         .menu-item .label {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #fff, #d4af37);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
         
         .menu-item .desc {
             color: #888;
             font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        .menu-item:hover .desc {
-            color: #d4af37;
         }
         
         .badge {
@@ -312,23 +167,12 @@
             padding: 5px 10px;
             border-radius: 15px;
             font-size: 11px;
-            font-weight: bold;
-            border: 1px solid #d4af37;
-        }
-        
-        .badge.new {
-            background: #d4af37;
-            color: #000;
         }
         
         .status {
             margin-top: 40px;
             color: #888;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            text-align: center;
         }
         
         .online-dot {
@@ -337,224 +181,38 @@
             height: 10px;
             background: #00ff00;
             border-radius: 50%;
-            box-shadow: 0 0 10px #00ff00;
-            animation: pulse 2s infinite;
+            margin-right: 5px;
         }
         
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        .footer {
-            margin-top: 50px;
-            color: #444;
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-        
-        .footer a {
-            color: #8b0000;
-            text-decoration: none;
-        }
-        
-        .footer a:hover {
-            color: #d4af37;
-        }
-        
-        /* Стили для кошелька */
         .wallet-widget {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(26, 26, 26, 0.95);
-            backdrop-filter: blur(10px);
+            background: #1a1a1a;
             border: 2px solid #8b0000;
             border-radius: 15px;
-            padding: 15px 20px;
+            padding: 10px 20px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
             z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: all 0.3s;
-        }
-        
-        .wallet-widget:hover {
-            border-color: #d4af37;
-            transform: translateY(-2px);
         }
         
         .wallet-icon {
-            font-size: 28px;
+            font-size: 24px;
             color: #d4af37;
-        }
-        
-        .wallet-info {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .wallet-label {
-            color: #888;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
         
         .wallet-balance {
             color: #d4af37;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
-            line-height: 1.2;
-        }
-        
-        .wallet-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .wallet-btn {
-            background: #2a2a2a;
-            border: 1px solid #8b0000;
-            color: #d4af37;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .wallet-btn:hover {
-            background: #8b0000;
-            color: #fff;
-        }
-        
-        /* Модальные окна */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            display: none;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #2a2a2a;
-            border: 2px solid #8b0000;
-            border-radius: 20px;
-            padding: 30px;
-            z-index: 10000;
-            width: 90%;
-            max-width: 400px;
-            color: #fff;
-            display: none;
-        }
-        
-        .modal h3 {
-            color: #d4af37;
-            margin-bottom: 20px;
-            font-size: 22px;
-        }
-        
-        .modal input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #3a3a3a;
-            border: 1px solid #8b0000;
-            border-radius: 8px;
-            color: #fff;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        
-        .modal-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .modal-btn.primary {
-            background: #8b0000;
-            color: #fff;
-        }
-        
-        .modal-btn.secondary {
-            background: #3a3a3a;
-            color: #fff;
-        }
-        
-        .history-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin: 15px 0;
-        }
-        
-        .history-item {
-            border-left: 3px solid;
-            padding: 10px;
-            margin: 5px 0;
-            background: #1a1a1a;
-            border-radius: 8px;
-        }
-        
-        .history-item.income {
-            border-left-color: #00ff00;
-        }
-        
-        .history-item.spend {
-            border-left-color: #8b0000;
         }
     </style>
 </head>
 <body>
     <div class="gothic-bg"></div>
-    
-    <!-- Знак императора -->
-    <div class="imperator-badge" id="imperatorBadge">👑 ИМПЕРАТОР</div>
-    
-    <!-- Виджет кошелька -->
-    <div id="wallet-container"></div>
-    
-    <!-- Модальные окна -->
-    <div class="modal-overlay" id="modalOverlay" onclick="closeAllModals()"></div>
-    
-    <div class="modal" id="transferModal">
-        <h3>💰 Перевод LTM</h3>
-        <input type="text" id="transferTo" placeholder="ID получателя">
-        <input type="number" id="transferAmount" placeholder="Сумма LTM" min="0.01" step="0.01">
-        <input type="text" id="transferComment" placeholder="Комментарий (необязательно)">
-        <div class="modal-buttons">
-            <button class="modal-btn primary" onclick="doTransfer()">Перевести</button>
-            <button class="modal-btn secondary" onclick="closeAllModals()">Отмена</button>
-        </div>
-    </div>
-    
-    <div class="modal" id="historyModal">
-        <h3>📊 История операций</h3>
-        <div id="historyList" class="history-list"></div>
-        <div class="modal-buttons">
-            <button class="modal-btn secondary" onclick="closeAllModals()">Закрыть</button>
-        </div>
-    </div>
-    
+
     <div class="container">
         <div class="header">
             <div class="title">LTM EMPIRE</div>
@@ -564,273 +222,108 @@
         <div class="user-info" id="userInfo">
             <div class="avatar" id="userAvatar">💀</div>
             <div class="user-details">
-                <div class="user-name">
-                    <span id="userName">Загрузка...</span>
-                    <span class="user-badge" id="userBadge">ИМПЕРАТОР</span>
-                </div>
-                <div class="user-id" id="userId"></div>
-                <div class="stats">
+                <div class="user-name" id="userName">Загрузка...</div>
+                <div class="user-stats">
                     <div class="stat">
-                        <div class="stat-value" id="statMessages">0</div>
-                        <div class="stat-label">сообщений</div>
+                        <div class="stat-value" id="statBalance">0</div>
+                        <div class="stat-label">LTM</div>
                     </div>
                     <div class="stat">
                         <div class="stat-value" id="statClicks">0</div>
                         <div class="stat-label">кликов</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value" id="statLTM">0</div>
-                        <div class="stat-label">LTM</div>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="menu">
-            <a href="messenger.html" class="menu-item">
-                <span class="emoji">💬</span>
-                <span class="label">Мессенджер</span>
-                <span class="desc">Личные сообщения, группы и каналы</span>
-                <span class="badge new">NEW</span>
-            </a>
-            
-            <a href="groups.html" class="menu-item">
-                <span class="emoji">👥</span>
-                <span class="label">Группы</span>
-                <span class="desc">Создавай и управляй группами</span>
-                <span class="badge">NEW</span>
-            </a>
-            
-            <a href="channels.html" class="menu-item">
-                <span class="emoji">📢</span>
-                <span class="label">Каналы</span>
-                <span class="desc">Транслируй свои мысли</span>
-                <span class="badge">NEW</span>
-            </a>
-            
             <a href="clicker.html" class="menu-item">
                 <span class="emoji">🖱️</span>
                 <span class="label">Кликер</span>
                 <span class="desc">Зарабатывай LTM</span>
             </a>
             
-            <a href="music.html" class="menu-item">
-                <span class="emoji">🎵</span>
-                <span class="label">Музыка</span>
-                <span class="desc">Свой плеер и треки</span>
-            </a>
-            
             <a href="feed.html" class="menu-item">
                 <span class="emoji">📰</span>
                 <span class="label">Лента</span>
-                <span class="desc">Посты и свобода слова</span>
-            </a>
-            
-            <a href="admin.html" class="menu-item">
-                <span class="emoji">👑</span>
-                <span class="label">Админка</span>
-                <span class="desc">Статистика империи</span>
-            </a>
-            
-            <a href="shop.html" class="menu-item">
-                <span class="emoji">🏪</span>
-                <span class="label">Магазин</span>
-                <span class="desc">Трать LTM на бусты и стикеры</span>
-                <span class="badge new">НОВЫЙ</span>
+                <span class="desc">Посты и свобода</span>
             </a>
             
             <a href="profile.html" class="menu-item">
-                <span class="emoji">⚙️</span>
+                <span class="emoji">👤</span>
                 <span class="label">Профиль</span>
-                <span class="desc">Настройки и аватар</span>
+                <span class="desc">Твоя статистика</span>
             </a>
         </div>
         
         <div class="status">
             <span class="online-dot"></span> 
-            <span id="onlineStatus">Империя ждет тебя</span>
-            <span id="onlineCount" style="color: #d4af37;">⚔️ 127 онлайн</span>
-        </div>
-        
-        <div class="footer">
-            🏴 LTM EMPIRE · v3.0.0 · <a href="#" onclick="tg.close()">Закрыть</a>
+            <span>Империя ждет тебя</span>
         </div>
     </div>
-    
-    <script src="wallet.js"></script>
-    <script src="shop.js"></script>
-    <script>
-        // ===== СВЯЩЕННЫЙ СПИСОК ИМПЕРАТОРОВ =====
-        const IMPERATORS = [
-            1783095587  // ← ТВОЙ ID, ИМПЕРАТОР!
-        ];
 
-        // Telegram WebApp
+    <script>
+        // ===== НАСТРОЙКА ПОДКЛЮЧЕНИЯ К СЕРВЕРУ =====
+        const API_BASE_URL = 'http://85.239.60.142:3000';
+
         let tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
-        
-        // Получаем данные пользователя из Telegram
+
         let user = tg.initDataUnsafe?.user;
-        let currentUserId = user ? 'tg_' + user.id : 'guest_' + Date.now();
-        let isImperator = user && IMPERATORS.includes(user.id);
-        
-        // Если император - добавляем спецэффекты
-        if (isImperator) {
-            document.body.classList.add('imperator');
-            document.getElementById('imperatorBadge').style.display = 'block';
-            console.log('%c👑 ИМПЕРАТОР ВОШЁЛ В СИСТЕМУ', 'color: #d4af37; font-size: 20px; font-weight: bold;');
-        }
-        
-        // Функция для загрузки аватара
-        function loadUserAvatar() {
-            if (user && user.photo_url) {
-                document.getElementById('userAvatar').innerHTML = `<img src="${user.photo_url}">`;
-            } else if (user) {
-                document.getElementById('userAvatar').textContent = user.first_name.charAt(0).toUpperCase();
+        let currentUserId = user ? user.id.toString() : 'guest_' + Date.now();
+
+        // Авторизация на сервере
+        async function authUser() {
+            if (!user) {
+                document.getElementById('userName').innerText = 'Гость';
+                return;
             }
-        }
-        
-        // Загрузка статистики пользователя
-        function loadUserStats() {
-            let tgId = user ? 'tg_' + user.id : 'guest';
             
-            // Получаем данные из localStorage
-            let userMessages = JSON.parse(localStorage.getItem('ltm_user_messages_' + tgId)) || 0;
-            let userClicks = JSON.parse(localStorage.getItem('ltm_user_clicks_' + tgId)) || 0;
-            let userLTM = JSON.parse(localStorage.getItem('ltm_balance_' + tgId)) || 0;
-            
-            document.getElementById('statMessages').innerText = userMessages;
-            document.getElementById('statClicks').innerText = userClicks.toLocaleString();
-            document.getElementById('statLTM').innerText = userLTM.toFixed(2);
-        }
-        
-        // Отображение информации о пользователе
-        if (user) {
-            document.getElementById('userName').innerHTML = `
-                ${user.first_name} ${user.last_name || ''}
-                ${isImperator ? '<span class="user-badge">👑 ИМПЕРАТОР</span>' : '<span class="user-badge">⚔️ ВОИН</span>'}
-            `;
-            document.getElementById('userId').innerHTML = `
-                <span style="color: #888;">TG ID:</span> ${user.id}
-            `;
-            
-            // Сохраняем в localStorage
-            localStorage.setItem('tg_id', user.id);
-            localStorage.setItem('tg_username', user.username || user.first_name);
-            localStorage.setItem('tg_first_name', user.first_name);
-            
-            loadUserAvatar();
-            loadUserStats();
-        } else {
-            document.getElementById('userName').innerHTML = 'Гость <span class="user-badge">👤 ГОСТЬ</span>';
-            document.getElementById('userId').innerHTML = 'Войдите через Telegram';
-        }
-        
-        // ===== ФИНАНСОВАЯ СИСТЕМА =====
-        let finance;
-        
-        if (user) {
-            finance = new LTMFinance(currentUserId);
-        } else {
-            finance = new LTMFinance('guest');
-        }
-        
-        // Создаём виджет кошелька
-        createWalletWidget(finance, 'wallet-container');
-        
-        // Глобальные функции для модалок
-        window.showTransferModal = function() {
-            document.getElementById('transferModal').style.display = 'block';
-            document.getElementById('modalOverlay').style.display = 'block';
-        };
-        
-        window.showHistoryModal = function() {
-            let history = finance.getHistory(50);
-            let list = document.getElementById('historyList');
-            list.innerHTML = '';
-            
-            history.forEach(t => {
-                let date = new Date(t.timestamp).toLocaleString();
-                let type = t.type === 'income' || t.type === 'transfer_in' ? 'income' : 'spend';
-                let sign = t.type === 'income' || t.type === 'transfer_in' ? '+' : '-';
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/telegram`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: user.id,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        username: user.username,
+                        photo_url: user.photo_url
+                    })
+                });
                 
-                let item = document.createElement('div');
-                item.className = `history-item ${type}`;
-                item.innerHTML = `
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>${t.reason || t.type}</span>
-                        <span style="color: ${type === 'income' ? '#00ff00' : '#8b0000'};">${sign}${t.amount.toFixed(2)} LTM</span>
-                    </div>
-                    <div style="font-size: 11px; color: #888; margin-top: 5px;">
-                        ${date} · Баланс: ${t.balance.toFixed(2)} LTM
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-            
-            if (history.length === 0) {
-                list.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">Нет операций</div>';
+                const data = await response.json();
+                if (data.success) {
+                    console.log('✅ Авторизация:', data.user);
+                    document.getElementById('userName').innerText = user.first_name;
+                    if (user.photo_url) {
+                        document.getElementById('userAvatar').innerHTML = `<img src="${user.photo_url}">`;
+                    }
+                    loadBalance();
+                }
+            } catch (error) {
+                console.error('❌ Ошибка авторизации:', error);
             }
-            
-            document.getElementById('historyModal').style.display = 'block';
-            document.getElementById('modalOverlay').style.display = 'block';
-        };
-        
-        window.doTransfer = function() {
-            let to = document.getElementById('transferTo').value.trim();
-            let amount = parseFloat(document.getElementById('transferAmount').value);
-            let comment = document.getElementById('transferComment').value.trim();
-            
-            if (!to) {
-                alert('Введите ID получателя');
-                return;
+        }
+
+        // Загрузка баланса
+        async function loadBalance() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/balance/${currentUserId}`);
+                const data = await response.json();
+                document.getElementById('statBalance').innerText = data.balance.toFixed(2);
+                document.getElementById('statClicks').innerText = data.clicks;
+            } catch (error) {
+                console.error('Ошибка загрузки баланса:', error);
             }
-            
-            if (!amount || amount <= 0) {
-                alert('Введите сумму');
-                return;
-            }
-            
-            let result = finance.transfer(to, amount, comment);
-            
-            if (result.success) {
-                alert(`✅ Переведено ${amount} LTM пользователю ${to}`);
-                closeAllModals();
-                document.getElementById('transferTo').value = '';
-                document.getElementById('transferAmount').value = '';
-                document.getElementById('transferComment').value = '';
-            } else {
-                alert(`❌ Ошибка: ${result.error}`);
-            }
-        };
-        
-        window.closeAllModals = function() {
-            document.getElementById('transferModal').style.display = 'none';
-            document.getElementById('historyModal').style.display = 'none';
-            document.getElementById('modalOverlay').style.display = 'none';
-        };
-        
-        // Симуляция онлайн статуса
-        setInterval(() => {
-            let online = Math.floor(Math.random() * 50) + 100;
-            document.getElementById('onlineCount').innerHTML = `⚔️ ${online} онлайн`;
-        }, 30000);
-        
+        }
+
+        // Запуск
+        authUser();
+
         // Главная кнопка Telegram
-        tg.MainButton.setText('🏴 Войти в империю').show();
-        tg.MainButton.onClick(() => {
-            tg.showAlert('Добро пожаловать, Император!');
-        });
-        
-        // Обработка клика по аватару
-        document.querySelector('.avatar').addEventListener('click', () => {
-            if (user) {
-                tg.showAlert(`Твой ID: ${user.id}\nИмя: ${user.first_name}`);
-            } else {
-                tg.showAlert('Ты не авторизован');
-            }
-        });
+        tg.MainButton.setText('🏴 Войти').show();
     </script>
 </body>
 </html>
