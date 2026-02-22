@@ -1,14 +1,5 @@
 // ===== КОНФИГУРАЦИЯ ПОДКЛЮЧЕНИЯ К СЕРВЕРУ =====
-// Определяем базовый URL API автоматически
-const API_BASE_URL = (() => {
-    // Если мы на том же домене, где крутится Nginx (85.239.60.142), 
-    // то можно использовать относительные пути
-    if (window.location.hostname === '85.239.60.142' || 
-        window.location.hostname === 'localhost') {
-        return '';  // относительные пути
-    }
-    // Если фронтенд на GitHub Pages, а API на сервере
-    return 'http://85.239.60.142';  // ЯВНО УКАЗЫВАЕМ HTTP
-})();
+// Прямое подключение к серверу через порт 3000
+const API_BASE_URL = 'http://85.239.60.142:3000';
 
-console.log('🌐 API URL:', API_BASE_URL || '(относительный)');
+console.log('🌐 API URL:', API_BASE_URL);
