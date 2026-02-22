@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏴 LTM Empire</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="config.js"></script>
     <style>
         * {
             margin: 0;
@@ -263,9 +264,7 @@
     </div>
 
     <script>
-        // ===== НАСТРОЙКА ПОДКЛЮЧЕНИЯ К СЕРВЕРУ =====
-        const API_BASE_URL = 'http://85.239.60.142:3000';
-
+        // Telegram WebApp
         let tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
@@ -281,7 +280,8 @@
             }
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/auth/telegram`, {
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/auth/telegram` : '/api/auth/telegram';
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -310,7 +310,8 @@
         // Загрузка баланса
         async function loadBalance() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/balance/${currentUserId}`);
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/balance/${currentUserId}` : `/api/balance/${currentUserId}`;
+                const response = await fetch(url);
                 const data = await response.json();
                 document.getElementById('statBalance').innerText = data.balance.toFixed(2);
                 document.getElementById('statClicks').innerText = data.clicks;
