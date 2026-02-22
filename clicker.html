@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🖱️ LTM Clicker</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="config.js"></script>
+    <title>🖱️ LTM Кликер</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
         body {
@@ -21,63 +19,116 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             padding: 20px;
+            position: relative;
+        }
+        
+        /* Готический фон */
+        .gothic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, #1a1a1a 0%, #0a0a0a 80%);
+            z-index: -1;
+        }
+        
+        .gothic-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M20 20 L30 20 L25 10 Z" fill="%238b0000"/><circle cx="70" cy="30" r="5" fill="%238b0000"/><path d="M80 70 Q85 75 90 70" stroke="%238b0000" fill="none" stroke-width="2"/></svg>');
+            background-repeat: repeat;
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            z-index: 1;
+            position: relative;
         }
         
         .header {
-            width: 100%;
-            background: #1a1a1a;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border-bottom: 2px solid #8b0000;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
         
-        .back-btn {
-            background: none;
-            border: none;
+        .title {
+            font-size: 48px;
             color: #d4af37;
-            font-size: 24px;
-            cursor: pointer;
-            text-decoration: none;
+            text-shadow: 0 0 20px #8b0000;
+            margin-bottom: 10px;
         }
         
-        .header-title {
-            color: #d4af37;
-            font-size: 24px;
-            font-weight: bold;
-            flex: 1;
+        .subtitle {
+            color: #8b0000;
+            font-size: 18px;
+            letter-spacing: 2px;
         }
         
-        .balance-container {
-            background: #1a1a1a;
+        .user-info {
+            background: rgba(26, 26, 26, 0.9);
             border: 2px solid #8b0000;
             border-radius: 15px;
             padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
             margin-bottom: 30px;
+            backdrop-filter: blur(10px);
         }
         
-        .balance-label {
-            color: #888;
+        .user-id-input {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #8b0000;
+            border-radius: 8px;
+            color: #fff;
             font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .user-id-input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #8b0000;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
             margin-bottom: 5px;
         }
         
-        .balance-value {
+        .stat-value {
             color: #d4af37;
-            font-size: 48px;
+            font-size: 24px;
             font-weight: bold;
         }
         
         .coin-container {
+            position: relative;
             width: 250px;
             height: 250px;
-            margin: 20px auto;
+            margin: 30px auto;
             cursor: pointer;
         }
         
@@ -91,142 +142,302 @@
             justify-content: center;
             font-size: 80px;
             color: #fff;
+            text-shadow: 0 0 20px #8b0000;
+            box-shadow: 0 10px 20px rgba(139,0,0,0.5);
             border: 4px solid #8b0000;
-            transition: transform 0.1s;
+            transition: all 0.2s;
+            animation: float 3s ease-in-out infinite;
         }
         
         .coin:active {
             transform: scale(0.95);
         }
         
-        .stats-container {
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .click-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.8), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+        
+        .click-effect.active {
+            opacity: 1;
+            animation: clickRipple 0.5s ease-out;
+        }
+        
+        @keyframes clickRipple {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+        
+        .multiplier-info {
             background: #1a1a1a;
             border: 1px solid #8b0000;
-            border-radius: 15px;
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
         }
         
-        .stat-item {
+        .multiplier {
+            color: #d4af37;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .click-counter {
+            font-size: 14px;
+            color: #888;
+            margin-top: 10px;
+        }
+        
+        .history {
+            background: #1a1a1a;
+            border: 1px solid #8b0000;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .history-title {
+            color: #d4af37;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .history-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: #2a2a2a;
-            border-radius: 8px;
+            padding: 8px;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 13px;
         }
         
-        .stat-label {
+        .history-item .time {
             color: #888;
         }
         
-        .stat-value {
-            color: #d4af37;
-            font-weight: bold;
+        .history-item .amount {
+            color: #00ff00;
         }
         
-        .floating-text {
-            position: fixed;
-            color: #d4af37;
-            font-weight: bold;
-            font-size: 18px;
-            animation: floatUp 1s ease-out forwards;
-            pointer-events: none;
+        .status {
+            color: #888;
+            font-size: 12px;
+            margin-top: 20px;
         }
         
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-50px); }
+        .button {
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.2s;
+        }
+        
+        .button:hover {
+            background: #a00;
+            transform: scale(1.05);
+        }
+        
+        .button:disabled {
+            background: #4a4a4a;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="index.html" class="back-btn">←</a>
-        <span class="header-title">🖱️ Кликер</span>
-    </div>
-
-    <div class="balance-container">
-        <div class="balance-label">Твой баланс</div>
-        <div class="balance-value" id="balance">0</div>
-    </div>
-
-    <div class="coin-container" onclick="handleClick(event)">
-        <div class="coin">💰</div>
-    </div>
-
-    <div class="stats-container">
-        <div class="stat-item">
-            <span class="stat-label">Кликов</span>
-            <span class="stat-value" id="clicks">0</span>
+    <div class="gothic-bg"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="title">🖱️ LTM КЛИКЕР</div>
+            <div class="subtitle">ТАПАЙ И ЗАРАБАТЫВАЙ</div>
         </div>
-        <div class="stat-item">
-            <span class="stat-label">За клик</span>
-            <span class="stat-value">0.01 LTM</span>
+        
+        <div class="user-info">
+            <input type="text" class="user-id-input" id="userId" placeholder="Введите ID пользователя" value="14908b6f-4c56-4de8-8c22-d43d6cfe9b31">
+            <button class="button" onclick="loadUserData()">Загрузить</button>
         </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Баланс</div>
+                <div class="stat-value" id="balance">0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Кликов</div>
+                <div class="stat-value" id="clicks">0</div>
+            </div>
+        </div>
+        
+        <div class="multiplier-info">
+            <div class="multiplier" id="multiplier">Множитель: x1</div>
+            <div class="click-counter" id="clickValue">За клик: 0.01 LTM</div>
+        </div>
+        
+        <div class="coin-container" id="coinContainer">
+            <div class="coin" onclick="handleClick()">💰</div>
+            <div class="click-effect" id="clickEffect"></div>
+        </div>
+        
+        <div class="history">
+            <div class="history-title">📋 Последние клики</div>
+            <div id="history"></div>
+        </div>
+        
+        <div class="status" id="status">Введите ID пользователя и нажмите Загрузить</div>
     </div>
-
+    
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.ready();
-
-        let user = tg.initDataUnsafe?.user;
-        let currentUserId = user ? user.id.toString() : 'guest_' + Date.now();
-
-        let balance = 0;
-        let clicks = 0;
-
-        async function loadStats() {
+        let currentUserId = '14908b6f-4c56-4de8-8c22-d43d6cfe9b31';
+        let multiplier = 1;
+        let clickHistory = [];
+        
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            const userId = document.getElementById('userId').value.trim();
+            if (!userId) {
+                showStatus('❌ Введите ID пользователя');
+                return;
+            }
+            
+            currentUserId = userId;
+            showStatus('⏳ Загрузка...');
+            
             try {
-                const url = API_BASE_URL ? `${API_BASE_URL}/api/balance/${currentUserId}` : `/api/balance/${currentUserId}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                balance = data.balance || 0;
-                clicks = data.clicks || 0;
-                updateUI();
-            } catch (error) {
-                console.error('Ошибка загрузки:', error);
+                // Получаем статистику
+                const statsResponse = await fetch(`/api/clicker/stats/${userId}`);
+                const statsData = await statsResponse.json();
+                
+                if (statsData.success) {
+                    document.getElementById('balance').innerText = parseFloat(statsData.balance).toFixed(2);
+                    document.getElementById('clicks').innerText = statsData.clicks;
+                    showStatus('✅ Данные загружены');
+                } else {
+                    showStatus('❌ Пользователь не найден');
+                }
+                
+                // Получаем историю
+                loadHistory();
+                
+            } catch (err) {
+                showStatus('❌ Ошибка загрузки');
+                console.error(err);
             }
         }
-
-        function updateUI() {
-            document.getElementById('balance').innerText = balance.toFixed(2);
-            document.getElementById('clicks').innerText = clicks;
-        }
-
-        async function handleClick(event) {
+        
+        // Загрузка истории транзакций
+        async function loadHistory() {
             try {
-                const url = API_BASE_URL ? `${API_BASE_URL}/api/click` : '/api/click';
-                const response = await fetch(url, {
+                const response = await fetch(`/api/economy/history/${currentUserId}?limit=10`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    clickHistory = data.transactions.filter(t => t.type === 'click');
+                    renderHistory();
+                }
+            } catch (err) {
+                console.error('Ошибка загрузки истории:', err);
+            }
+        }
+        
+        // Обработка клика
+        async function handleClick() {
+            if (!currentUserId) {
+                showStatus('❌ Сначала загрузите пользователя');
+                return;
+            }
+            
+            // Анимация
+            const effect = document.getElementById('clickEffect');
+            effect.classList.add('active');
+            setTimeout(() => effect.classList.remove('active'), 500);
+            
+            try {
+                const response = await fetch(`/api/clicker/click/${currentUserId}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: currentUserId })
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ multiplier })
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    balance = data.balance;
-                    clicks = data.clicks;
-                    updateUI();
+                    // Обновляем баланс и клики
+                    document.getElementById('balance').innerText = parseFloat(data.balance).toFixed(2);
+                    document.getElementById('clicks').innerText = data.clicks;
                     
-                    // Флоатер
-                    let floating = document.createElement('div');
-                    floating.className = 'floating-text';
-                    floating.innerText = `+${data.earned.toFixed(2)} LTM`;
-                    floating.style.left = (event.clientX - 20) + 'px';
-                    floating.style.top = (event.clientY - 30) + 'px';
-                    document.body.appendChild(floating);
-                    setTimeout(() => floating.remove(), 1000);
+                    // Добавляем в историю
+                    clickHistory.unshift({
+                        amount: data.earned,
+                        created_at: new Date().toISOString()
+                    });
+                    
+                    if (clickHistory.length > 10) clickHistory.pop();
+                    renderHistory();
+                    
+                    showStatus(`✅ +${data.earned.toFixed(2)} LTM`);
+                } else {
+                    showStatus('❌ Ошибка клика');
                 }
-            } catch (error) {
-                console.error('Ошибка клика:', error);
+            } catch (err) {
+                showStatus('❌ Ошибка соединения');
+                console.error(err);
             }
         }
-
-        loadStats();
+        
+        // Отображение истории
+        function renderHistory() {
+            const historyDiv = document.getElementById('history');
+            
+            if (clickHistory.length === 0) {
+                historyDiv.innerHTML = '<div style="color: #888; text-align: center;">Нет кликов</div>';
+                return;
+            }
+            
+            let html = '';
+            clickHistory.forEach(item => {
+                const time = new Date(item.created_at).toLocaleTimeString();
+                html += `
+                    <div class="history-item">
+                        <span class="time">${time}</span>
+                        <span class="amount">+${parseFloat(item.amount).toFixed(2)} LTM</span>
+                    </div>
+                `;
+            });
+            
+            historyDiv.innerHTML = html;
+        }
+        
+        // Показ статуса
+        function showStatus(text) {
+            document.getElementById('status').innerText = text;
+        }
+        
+        // Автозагрузка при старте
+        window.onload = () => {
+            loadUserData();
+        };
     </script>
 </body>
 </html>
