@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📰 LTM Feed</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="config.js"></script>
     <style>
         * {
             margin: 0;
@@ -194,8 +195,6 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://85.239.60.142:3000';
-
         let tg = window.Telegram.WebApp;
         tg.ready();
 
@@ -204,7 +203,8 @@
 
         async function loadFeed() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/feed`);
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/feed` : '/api/feed';
+                const response = await fetch(url);
                 const posts = await response.json();
                 
                 const feed = document.getElementById('feed');
@@ -213,9 +213,6 @@
                 posts.forEach(post => {
                     const card = document.createElement('div');
                     card.className = 'post-card';
-                    
-                    let likedBy = post.liked_by || [];
-                    let isLiked = likedBy.includes(currentUserId);
                     
                     card.innerHTML = `
                         <div class="post-header">
@@ -238,7 +235,8 @@
 
         async function likePost(postId, btn) {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/posts/${postId}/like`, {
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/posts/${postId}/like` : `/api/posts/${postId}/like`;
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: currentUserId })
@@ -268,7 +266,8 @@
             if (!content) return;
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/posts`, {
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/posts` : '/api/posts';
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
